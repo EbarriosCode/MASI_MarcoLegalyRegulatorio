@@ -14,7 +14,8 @@ namespace MASI_MarcoLegal.Server.Models
         public string Detalle { get; set; }
         public int ArticuloID { get; set; }
         public Articulos Articulo { get; set; }
+        public bool Verificable { get; set; }
 
-        public ICollection<Cumplimientos> Cumplimientos { get; set; }
+        public ICollection<SubIncisos> SubIncisos { get; set; }
     }
 }

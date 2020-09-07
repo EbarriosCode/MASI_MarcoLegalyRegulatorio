@@ -4,14 +4,16 @@ using MASI_MarcoLegal.Server.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MASI_MarcoLegal.Server.Migrations
 {
     [DbContext(typeof(MASIContext))]
-    partial class MASIContextModelSnapshot : ModelSnapshot
+    [Migration("20200907033009_ModeloSubIncisos")]
+    partial class ModeloSubIncisos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

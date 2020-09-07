@@ -21,6 +21,7 @@ namespace MASI_MarcoLegal.Server.DataContext
         public DbSet<Capitulos> Capitulos { get; set; }
         public DbSet<Articulos> Articulos { get; set; }
         public DbSet<Incisos> Incisos { get; set; }
+        public DbSet<SubIncisos> SubIncisos { get; set; }
         public DbSet<LeyOrganizacion> LeyesOrganizaciones { get; set; }
         public DbSet<Cumplimientos> Cumplimientos { get; set; }
 

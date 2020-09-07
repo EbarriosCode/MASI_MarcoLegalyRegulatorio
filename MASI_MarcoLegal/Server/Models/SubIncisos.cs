@@ -6,16 +6,14 @@ using System.Threading.Tasks;
 
 namespace MASI_MarcoLegal.Server.Models
 {
-    public class Articulos
+    public class SubIncisos
     {
         [Key]
-        public int ArticuloID { get; set; }
+        public int SubIncisoID { get; set; }
         public string Descripcion { get; set; }
         public string Detalle { get; set; }
-        public int CapituloID { get; set; }
-        public Capitulos Capitulo { get; set; }
+        public int IncisoID { get; set; }
+        public Incisos Inciso { get; set; }
         public bool Verificable { get; set; }
-
-        public ICollection<Incisos> Incisos { get; set; }
     }
 }
