@@ -1,0 +1,83 @@
+﻿@layout LoginLayout
+@page "/Login"
+@inject HttpClient httpClient
+@inject NavigationManager uriHelper
+@inject ILoginService loginService
+
+<div class="loader-wrapper"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
+<div class="card card-authentication1 mx-auto my-5">
+    <div class="card-body">
+        <div class="card-content p-2">
+            <div class="text-center">
+                <img src="assets/images/logo-icon.png" alt="logo icon">
+            </div>
+            <div class="card-title text-uppercase text-center py-3">Login</div>
+            <EditForm Model="userInfo"
+                      OnValidSubmit="LoginUser">
+
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label for="InputUsername" class="sr-only">Nombre de Usuario</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText id="InputUsername" Class="form-control input-shadow" placeholder="Ingresa tu nombre de usuario" @bind-Value="userInfo.Email" />
+                        <ValidationMessage For="@(()=>userInfo.Email)" />                        
+                        <div class="form-control-position">
+                            <i class="icon-user"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="InputPassword" class="sr-only">Contraseña</label>
+                    <div class="position-relative has-icon-right">                        
+                        <InputPassword id="InputPassword" Class="form-control input-shadow" @bind-Value="@userInfo.Password" />
+                        <ValidationMessage For="@(()=>userInfo.Password)" />
+                        <div class="form-control-position">
+                            <i class="icon-lock"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <div class="icheck-material-white">
+                            <input type="checkbox" id="user-checkbox" checked="" />
+                            <label for="user-checkbox">Recordarme la próxima vez</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-light btn-block">Entrar</button>
+                <div class="text-center mt-3">Entrar con</div>
+
+                <div class="form-row mt-4">
+                    <div class="form-group mb-0 col-6">
+                        <button type="button" class="btn btn-light btn-block"><i class="fa fa-facebook-square"></i> Facebook</button>
+                    </div>
+                    <div class="form-group mb-0 col-6 text-right">
+                        <button type="button" class="btn btn-light btn-block"><i class="fa fa-twitter-square"></i> Twitter</button>
+                    </div>
+                </div>
+
+                <ValidationSummary/>
+            </EditForm>
+        </div>
+    </div>
+    <div class="card-footer text-center py-3">
+        <p class="text-warning mb-0">Marco Legal y Regulatorio</p>
+    </div>
+</div>
+
+
+@code {
+    private UserInfo userInfo = new UserInfo();
+
+    private async Task LoginUser()
+    {
+        var result = await httpClient.PostAsJsonAsync("api/Accounts/Login", userInfo);
+        var content = result.Content.ReadFromJsonAsync<UserToken>();
+        Console.WriteLine(content.Result.Token);
+
+
+        await loginService.Login(content.Result.Token);
+        uriHelper.NavigateTo("");
+    }
+}

@@ -15,5 +15,6 @@ namespace MASI_MarcoLegal.Server.Models
 
         public ICollection<Considerandos> Considerandos { get; set; }
         public ICollection<Titulos> Titulos { get; set; }
+        public ICollection<LeyOrganizacion> LeyesOrganizaciones { get; set; }
     }
 }

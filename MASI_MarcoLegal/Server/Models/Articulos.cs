@@ -11,6 +11,7 @@ namespace MASI_MarcoLegal.Server.Models
         [Key]
         public int ArticuloID { get; set; }
         public string Descripcion { get; set; }
+        public string Detalle { get; set; }
         public int CapituloID { get; set; }
         public Capitulos Capitulo { get; set; }
 

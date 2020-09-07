@@ -1,27 +1,73 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">MASI_MarcoLegal</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+﻿<!--Start sidebar-wrapper-->
+<div class="brand-logo">
+    <NavLink href="" Match="NavLinkMatch.All">
+        <img src="assets/images/logo-icon.png" class="logo-icon" alt="logo icon">
+        <h5 class="logo-text">Marco Legal - MASI</h5>
+    </NavLink>
 </div>
+<ul class="sidebar-menu do-nicescrol">
+    <li class="sidebar-header">NAVEGACIÓN PRINCIPAL</li>
+    <li>
+        <NavLink href="" Match="NavLinkMatch.All">
+            <i class="zmdi zmdi-view-dashboard"></i> <span>Home</span>
+        </NavLink>
+    </li>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+    <li>
+        <NavLink href="Recientes">
+            <i class="zmdi zmdi-calendar-check"></i> <span>Recientes</span>
+        </NavLink>
+    </li>
+
+    <li>
+        <NavLink href="Leyes">
+            <i class="zmdi zmdi-badge-check"></i> <span>Marcos Legales</span>
+        </NavLink>
+    </li>
+
+    <li>
+        <NavLink href="Organizaciones">
+            <i class="zmdi zmdi-check-all"></i> <span>Organizaciones</span>
+        </NavLink>
+    </li>
+
+    <li>
+        <NavLink href="Reportes">
+            <i class="zmdi zmdi-chart"></i> <span>Reportes</span>
+        </NavLink>
+    </li>
+
+    <AuthorizeView Roles="Admin">
+        <li class="sidebar-header">CATÁLOGOS</li>
+        <li>
+            <NavLink href="Titulos">
+                <i class="zmdi zmdi-assignment-o text-success"></i> <span>Títulos</span>
             </NavLink>
-        </li>       
-    </ul>
-</div>
+        </li>
 
-@code {
-    private bool collapseNavMenu = true;
+        <li>
+            <NavLink href="Capitulos">
+                <i class="zmdi zmdi-album text-info"></i> <span>Capítulos</span>
+            </NavLink>
+        </li>
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+        <li>
+            <NavLink href="Articulos">
+                <i class="zmdi zmdi-assignment text-success"></i> <span>Artículos</span>
+            </NavLink>
+        </li>
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+        <li>
+            <NavLink href="Incisos">
+                <i class="zmdi zmdi-book text-info"></i> <span>Incisos</span>
+            </NavLink>
+        </li>
+
+        <li>
+            <NavLink href="SubIncisos">
+                <i class="zmdi zmdi-bookmark text-success"></i> <span>Sub Incisos</span>
+            </NavLink>
+        </li>
+    </AuthorizeView>
+</ul>
+<!--End sidebar-wrapper-->

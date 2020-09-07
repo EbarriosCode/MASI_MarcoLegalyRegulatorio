@@ -1,15 +1,23 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="sidebar">
+<div id="sidebar-wrapper" data-simplebar-auto-hide="true">
     <NavMenu />
+    <Header />
 </div>
 
-<div class="main">
-    <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-    </div>
+<!-- Start wrapper-->
+<div id="wrapper">
 
-    <div class="content px-4">
-        @Body
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            @Body
+        </div>
     </div>
+    <div class="clearfix"></div>
+
+    <Footer />
 </div>
+<!--End wrapper-->
+
+
+

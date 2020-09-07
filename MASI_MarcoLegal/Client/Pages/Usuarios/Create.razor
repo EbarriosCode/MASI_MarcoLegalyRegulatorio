@@ -1,0 +1,59 @@
+﻿@page "/CreateUser"
+@inject HttpClient httpClient
+@inject NavigationManager uriHelper
+@inject MASI_MarcoLegal.Client.Auth.ILoginService loginService
+
+<div class="card">
+    <div class="card-body">
+        <h3>Crear Usuario</h3>
+        <EditForm 
+            Model="userInfo"
+            OnValidSubmit="@CreateUser">
+            
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Email:</label>
+                <div>
+                    <InputText Class="form-control" @bind-Value="userInfo.Email" />
+                    <ValidationMessage For="@(()=>userInfo.Email)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <div>
+                    <InputText Class="form-control" @bind-Value="userInfo.Password" />
+                    <ValidationMessage For="@(()=>userInfo.Password)" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Crear</button>
+
+            <ValidationSummary/>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private UserInfo userInfo = new UserInfo();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var objetos = await httpClient.GetAsync("api/Accounts");
+        Console.WriteLine("Status Code => "+objetos.StatusCode);
+    }
+
+    private async Task CreateUser()
+    {
+        Console.WriteLine("User: "+userInfo.Email+" Password: "+userInfo.Password);
+
+        var result = await httpClient.PostAsJsonAsync("api/Accounts/Create", userInfo);
+        var content = result.Content.ReadFromJsonAsync<UserToken>();
+        Console.WriteLine(content.Result.Token);
+
+
+        await loginService.Login(content.Result.Token);
+        uriHelper.NavigateTo("");
+    }
+
+}

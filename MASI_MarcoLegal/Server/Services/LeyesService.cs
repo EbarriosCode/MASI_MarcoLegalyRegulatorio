@@ -25,11 +25,13 @@ namespace MASI_MarcoLegal.Server.Services
             {
                 leyes = await this._context
                                         .Leyes
-                                        .AsNoTracking()
-                                        .AsQueryable()
                                         .Include(l => l.Considerandos)
                                         .Include(l => l.Titulos)
+                                            .ThenInclude(l => l.Capitulos)
+                                                .ThenInclude(l => l.Articulos)
+                                                    .ThenInclude(l => l.Incisos)
                                         .ToListAsync();
+
             }
             catch (Exception)
             {

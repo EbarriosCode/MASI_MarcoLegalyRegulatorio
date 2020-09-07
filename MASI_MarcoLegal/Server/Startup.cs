@@ -10,6 +10,11 @@ using MASI_MarcoLegal.Server.DataContext;
 using Microsoft.EntityFrameworkCore;
 using MASI_MarcoLegal.Server.Middlerware;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
 
 namespace MASI_MarcoLegal.Server
 {
@@ -33,6 +38,30 @@ namespace MASI_MarcoLegal.Server
 
             // Configuración del Contexto de Base de Datos
             services.AddDbContext<MASIContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Configuración de Indentity Server
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                    .AddRoles<IdentityRole>()
+                    .AddEntityFrameworkStores<MASIContext>()
+                    .AddDefaultTokenProviders();
+
+            // Configuración JWT
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = Configuration["JwtIssuer"],
+                            ValidAudience = Configuration["JwtAudience"],
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"])),
+                            ClockSkew = TimeSpan.Zero
+                        };
+                    });
+
 
             // Inyectar dependencias locales
             IoC.AddDependency(services);
@@ -58,6 +87,9 @@ namespace MASI_MarcoLegal.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
