@@ -10,6 +10,12 @@ using MASI_MarcoLegal.Server.DataContext;
 using Microsoft.EntityFrameworkCore;
 using MASI_MarcoLegal.Server.Middlerware;
 using Newtonsoft.Json;
+using MASI_MarcoLegal.Server.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace MASI_MarcoLegal.Server
 {
@@ -36,6 +42,19 @@ namespace MASI_MarcoLegal.Server
 
             // Inyectar dependencias locales
             IoC.AddDependency(services);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                   .AddJwtBearer(options =>
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                   Encoding.UTF8.GetBytes(this.Configuration["jwt:key"])),
+                    ClockSkew = TimeSpan.Zero
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +77,8 @@ namespace MASI_MarcoLegal.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

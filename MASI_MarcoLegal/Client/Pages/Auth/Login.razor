@@ -1,0 +1,91 @@
+﻿@page "/login"
+@layout LoginLayout
+<h3>Login</h3>
+@using System.Net.Http
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject ILoginService loginService
+@inject IJSRuntime JsRuntime;
+
+@using MASI_MarcoLegal.Client.Auth
+
+<div class="main">
+
+
+    <div class="container">
+        <center>
+            <div class="middle">
+                <div id="login">
+
+                    <EditForm Model="userLogin" OnValidSubmit="LoginUsuario">
+                        <DataAnnotationsValidator />
+                        <fieldset class="clearfix">
+
+                            <div>
+                                <span class="fa fa-user"></span>
+                                <InputText type="text" name="username" id="username" Placeholder="Username" @bind-Value="@userLogin.Username" />
+                                <ValidationMessage For="@(() => userLogin.Username)" />
+                            </div> <!-- JS because of IE support; better: placeholder="Username" -->
+
+                            <div>
+                                <span class="fa fa-lock"></span>
+                                <InputPassword type="password" name="password" id="password" Placeholder="Password" @bind-Value="@userLogin.Password" />
+                                <ValidationMessage For="@(() => userLogin.Password)" />
+                            </div> <!-- JS because of IE support; better: placeholder="Password" -->
+
+                            <div>
+                                <span style="width:48%; text-align:left;  display: inline-block;">
+                                    <a class="small-text" href="#">
+                                        Forgot
+                                        password?
+                                    </a>
+                                </span>
+                                <span style="width:50%; text-align:right;  display: inline-block;"><button id="btnIngresar" type="submit" class="btn btn-lg btn-success btn-block">Ingresar</button></span>
+                            </div>
+
+                        </fieldset>
+                    </EditForm>
+                    <div class="clearfix"></div>
+
+
+                    <div class="clearfix"></div>
+
+                </div> <!-- end login -->
+                <div class="logo">
+                    UMG
+
+                    <div class="clearfix"></div>
+                </div>
+
+            </div>
+        </center>
+    </div>
+
+</div>
+
+@code { private UsuarioLogin userLogin = new UsuarioLogin();
+
+    private async Task LoginUsuario()
+    {
+        var result = await http.PostAsJsonAsync("api/cuentas/login", userLogin);
+
+
+
+        if (result.IsSuccessStatusCode)
+        {
+            UserToken usuario = await result.Content.ReadFromJsonAsync<UserToken>();
+            await loginService.Login(usuario.Token);
+            uriHelper.NavigateTo("");
+        }
+        else if(result.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            var er = await result.Content.ReadAsStringAsync();
+            Console.WriteLine(er);
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm",er);
+        }
+        else
+        {
+            bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Error al hacer login");
+        }
+    }
+    }

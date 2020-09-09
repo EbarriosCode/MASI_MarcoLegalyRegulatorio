@@ -1,10 +1,9 @@
 ﻿using MASI_MarcoLegal.Server.Models;
+using MASI_MarcoLegal.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MASI_MarcoLegal.Server.DataContext.Data
 {
@@ -14,6 +13,37 @@ namespace MASI_MarcoLegal.Server.DataContext.Data
         {
             using (var _context = new MASIContext(serviceProvider.GetRequiredService<DbContextOptions<MASIContext>>()))
             {
+                // Agregando Leyes a la BD
+                if (_context.Roles.Any()) return;
+
+                var roles = new Roles[]
+                {
+                    new Roles { Rol ="supervisor" },
+                    new Roles { Rol ="institucion"},
+                    new Roles { Rol ="admin"}
+                };
+
+                _context.Roles.AddRange(roles);
+
+                _context.SaveChanges();
+
+                if (_context.Usuarios.Any()) return;
+
+                var usuarios = new Usuarios[]
+                {
+                    new Usuarios { Nombres="admin",
+                        Apellidos="Admin",
+                        Correo="admin@gmail.com",
+                        Password="manager1",
+                        Puesto="admin",
+                        RolId = roles.FirstOrDefault(l => l.Rol.Contains("admin")).RolId,
+                        Usuario="admin"
+                    }
+                };
+
+                _context.Usuarios.AddRange(usuarios);
+
+                _context.SaveChanges();
                 // Agregando Leyes a la BD
                 if (_context.Leyes.Any()) return;
 

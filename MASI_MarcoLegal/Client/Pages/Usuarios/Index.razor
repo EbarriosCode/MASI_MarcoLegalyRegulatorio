@@ -1,0 +1,136 @@
+﻿@page "/indice-usuarios"
+@using System.Net.Http
+@inject HttpClient Http
+@inject IJSRuntime JS
+@using System.IO
+@using System.Text.Json
+@attribute [Authorize(Roles = "admin")]
+@using Microsoft.AspNetCore.Authorization;
+
+
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Usuarios</h3>
+        <div class="form-group">
+            <a class="btn btn-success" href="crear-usuario">Nuevo Usuario</a>
+        </div>
+
+
+        <div class="form-inline">
+            <label class="sr-only" for="nombre-filtro">Filtrar</label>
+            <input type="text" class="form-control mb-2 mr-sm-2"
+                   @bind="nombrePersonaFiltro" placeholder="Filtrar por Nombre" />
+            <button type="button" class="btn btn-primary mr-sm-2 mb-2"
+                    @onclick="Filtrar">
+                Filtrar
+            </button>
+            <button type="button" class="btn btn-danger mb-2"
+                    @onclick="Limpiar">
+                Limpiar
+            </button>
+
+        </div>
+
+        <Paginacion PaginasTotales="paginasTotales" PaginaActual="paginaActual" Radio="2"
+                    PaginaSeleccionada="PaginaSeleccionada"></Paginacion>
+
+        <ListadoGenerico Listado="Userinf">
+            <PlantillaConElementos>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Puesto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Usuarios in Userinf)
+                        {
+                            <tr>
+                                <td>
+                                    <a class="btn btn-success" href="editar-usuario/@Usuarios.UsuarioID">Editar</a>
+                                    <button class="btn btn-danger" @onclick="@(() => BorrarPersona(Usuarios.UsuarioID))">Borrar</button>
+
+                                </td>
+                                <td>@Usuarios.UsuarioID</td>
+                                <td>@Usuarios.Nombres</td>
+                                <td>@Usuarios.Apellidos</td>
+                                <td>@Usuarios.Correo</td>
+                                <td>@Usuarios.Puesto</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </PlantillaConElementos>
+        </ListadoGenerico>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    List<Usuarios> Userinf { get; set; }
+
+    private int paginaActual = 1;
+    private int paginasTotales;
+    private string nombrePersonaFiltro = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPersonas();
+    }
+
+    private async Task PaginaSeleccionada(int pagina)
+    {
+        paginaActual = pagina;
+        await CargarPersonas(pagina);
+    }
+
+    private async Task Filtrar()
+    {
+        paginaActual = 1;
+        await CargarPersonas();
+    }
+
+    private async Task Limpiar()
+    {
+        nombrePersonaFiltro = string.Empty;
+        paginaActual = 1;
+        await CargarPersonas();
+    }
+
+    async Task CargarPersonas(int pagina = 1, int cantidadRegistrosAMostrar = 10)
+    {
+        var httpResponse = await Http.GetAsync($"api/cuentas?pagina={pagina}&CantidadAMostrar={cantidadRegistrosAMostrar}&nombre={nombrePersonaFiltro}");
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            paginasTotales = int.Parse(httpResponse.Headers.GetValues("totalPaginas").FirstOrDefault());
+            var responseString = await httpResponse.Content.ReadAsStringAsync();
+            Userinf = JsonSerializer.Deserialize<List<Usuarios>>(responseString,
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        }
+        else
+        {
+            Console.WriteLine("error");
+        }
+
+    }
+
+    async Task BorrarPersona(int idPersona)
+    {
+        var personaSeleccionada = Userinf.First(x => x.UsuarioID == idPersona);
+        string mensajeConfirmacion = $"¿Deseas borrar el usuario {personaSeleccionada.Nombres}?";
+        if (await JS.Confirm("Confirmar", mensajeConfirmacion, TipoMensajeSweetAlert.question))
+        {
+            await Http.DeleteAsync($"api/cuentas/eliminar/{idPersona}");
+            await CargarPersonas();
+        }
+    }
+}
+
+
+

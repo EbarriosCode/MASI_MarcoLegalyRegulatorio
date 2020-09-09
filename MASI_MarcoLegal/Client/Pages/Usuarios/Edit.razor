@@ -1,0 +1,29 @@
+﻿@page "/editar-usuario/{IdUser:int}"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager UriHelper
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization;
+<h3>Editar Cuenta</h3>
+
+@if (persona != null)
+{
+    <FormularioUsuarios TextoBoton="Editar Persona" OnValidSubmit="@EditarPersona" Persona="@persona" />
+
+}
+
+@code {
+    [Parameter] public int IdUser { get; set; }
+    Usuarios persona;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        persona = await Http.GetJsonAsync<Usuarios>($"api/cuentas/{IdUser}");
+    }
+
+    async Task EditarPersona()
+    {
+        await Http.PutJsonAsync("api/cuentas/editar", persona);
+        UriHelper.NavigateTo("indice-usuarios");
+    }
+}

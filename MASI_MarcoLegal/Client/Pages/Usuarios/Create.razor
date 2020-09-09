@@ -1,0 +1,19 @@
+﻿@page "/crear-usuario"
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager UriHelper
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization;
+
+
+<h3>Crear Cuenta</h3>
+
+<FormularioUsuarios TextoBoton="Crear Persona" OnValidSubmit="@CrearPersona" Persona="@userInfo" />
+
+@code { Usuarios userInfo = new Usuarios();
+
+            async Task CrearPersona()
+            {
+                await Http.PostJsonAsync("api/cuentas/crear", userInfo);
+                UriHelper.NavigateTo("indice-usuarios");
+            } }

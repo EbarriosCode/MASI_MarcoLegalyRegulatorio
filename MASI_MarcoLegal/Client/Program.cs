@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MASI_MarcoLegal.Client.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace MASI_MarcoLegal.Client
 {
@@ -18,6 +20,10 @@ namespace MASI_MarcoLegal.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<JWTAuthenticationProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider, JWTAuthenticationProvider>(provider => provider.GetRequiredService<JWTAuthenticationProvider>());
+            builder.Services.AddScoped<ILoginService, JWTAuthenticationProvider>(provider => provider.GetRequiredService<JWTAuthenticationProvider>());
 
             await builder.Build().RunAsync();
         }

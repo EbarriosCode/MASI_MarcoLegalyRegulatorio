@@ -1,0 +1,96 @@
+﻿@using System.Net.Http
+@inject HttpClient Http
+
+<EditForm Model="@Persona" OnValidSubmit="@OnValidSubmit">
+    <div class="form-group">
+        <label>Usuario:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Persona.Usuario" />
+            <ValidationMessage For="@(() => Persona.Usuario)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Nombre:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Persona.Nombres" />
+            <ValidationMessage For="@(() => Persona.Nombres)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Apellido:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Persona.Apellidos" />
+            <ValidationMessage For="@(() => Persona.Apellidos)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Correo:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Persona.Correo" />
+            <ValidationMessage For="@(() => Persona.Correo)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Puesto:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Persona.Puesto" />
+            <ValidationMessage For="@(() => Persona.Puesto)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Contraseña:</label>
+        <div>
+            <InputText class="form-control" type="password" @bind-Value="@Persona.Password" />
+            <ValidationMessage For="@(() => Persona.Password)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Confirmar Contraseña:</label>
+        <div>
+            <InputText class="form-control" type="password" @bind-Value="@Persona.ConfirmPassword" />
+            <ValidationMessage For="@(() => Persona.ConfirmPassword)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Rol:</label>
+        <div>
+            <ValidationMessage For="@(() => Persona.UsuarioID)" />
+            <InputSelectNumber class="form-control"
+                               @bind-Value="Persona.RolId">
+                <option value="0">--Seleccione un Rol--</option>
+                @foreach (var item in Roles)
+                {
+        @if (item.RolId == Persona.RolId)
+        {
+        <option selected value="@item.RolId">@item.Rol</option> }
+    else
+    {
+        <option value="@item.RolId">@item.Rol</option>}}
+            </InputSelectNumber>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">@TextoBoton</button>
+    <DataAnnotationsValidator />
+</EditForm>
+
+@code { [Parameter] public Usuarios Persona { get; set; } = new Usuarios();
+    [Parameter] public String TextoBoton { get; set; } = "Grabar";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    List<Roles> Roles = new List<Roles>();
+    private int rolId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Persona.Rol != null)
+        {
+            rolId = Persona.Rol.RolId;
+        }
+
+        Roles = await Http.GetJsonAsync<List<Roles>>("api/Roles");
+    }
+
+
+}
+
