@@ -1,0 +1,53 @@
+﻿@page "/Titulos"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
+
+@if (TitulosAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Títulos</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Detalle</th>
+                            <th scope="col">Ley</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in TitulosAPI)
+                        {
+                        <tr>
+                            <td scope="row">@item.TituloID</td>
+                            <td>@item.Descripcion</td>
+                            <td>@item.Detalle</td>
+                            <td>@item.Ley.Descripcion</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<TituloViewModel> TitulosAPI { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetTitulosAsync();
+    }
+
+    private async Task GetTitulosAsync()
+    {
+        this.TitulosAPI = await httpClient.GetFromJsonAsync<List<TituloViewModel>>("api/MarcoLegal/GetTitulos");
+    }
+}

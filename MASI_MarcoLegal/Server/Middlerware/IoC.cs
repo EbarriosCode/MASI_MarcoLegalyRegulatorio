@@ -12,7 +12,10 @@ namespace MASI_MarcoLegal.Server.Middlerware
         public static IServiceCollection AddDependency(this IServiceCollection services)
         {
             // Inyectar el servicio de Leyes
-            services.AddTransient<ILeyesService, LeyesService>();           
+            services.AddTransient<IMarcolegalService, MarcoLegalService>();
+
+            // Inyectar el servicio de Organizaciones
+            services.AddTransient<IOrganizacionesService, OrganizacionesService>();
 
             return services;
         }

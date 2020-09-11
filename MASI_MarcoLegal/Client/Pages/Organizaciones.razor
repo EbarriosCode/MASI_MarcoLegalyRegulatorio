@@ -1,0 +1,49 @@
+﻿@page "/Organizaciones"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
+
+@if (OrganizacionesAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Organizaciones</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in OrganizacionesAPI)
+                    {
+                        <tr>
+                            <td scope="row">@item.OrganizacionID</td>
+                            <td>@item.Nombre</td>                            
+                       </tr>
+                    }                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<OrganizacionViewModel> OrganizacionesAPI { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetOrganizacionesAsync();
+    }
+
+    private async Task GetOrganizacionesAsync()
+    {
+        OrganizacionesAPI = await httpClient.GetFromJsonAsync<List<OrganizacionViewModel>>("api/Organizaciones");        
+    }
+}

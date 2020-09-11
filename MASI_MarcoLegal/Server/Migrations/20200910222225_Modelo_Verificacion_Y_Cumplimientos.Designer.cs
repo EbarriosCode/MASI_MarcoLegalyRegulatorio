@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MASI_MarcoLegal.Server.Migrations
 {
     [DbContext(typeof(MASIContext))]
-    [Migration("20200907033009_ModeloSubIncisos")]
-    partial class ModeloSubIncisos
+    [Migration("20200910222225_Modelo_Verificacion_Y_Cumplimientos")]
+    partial class Modelo_Verificacion_Y_Cumplimientos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,9 +90,37 @@ namespace MASI_MarcoLegal.Server.Migrations
                     b.ToTable("Considerandos");
                 });
 
-            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Cumplimientos", b =>
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.CumplimientoArticulo", b =>
                 {
-                    b.Property<int>("CumplimientoID")
+                    b.Property<int>("CumplimientoArticuloID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ArticuloID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Cumple")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Evidencia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("VerificacionID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CumplimientoArticuloID");
+
+                    b.HasIndex("ArticuloID");
+
+                    b.HasIndex("VerificacionID");
+
+                    b.ToTable("CumplimientoArticulo");
+                });
+
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.CumplimientoInciso", b =>
+                {
+                    b.Property<int>("CumplimientoIncisoID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -106,11 +134,44 @@ namespace MASI_MarcoLegal.Server.Migrations
                     b.Property<int>("IncisoID")
                         .HasColumnType("int");
 
-                    b.HasKey("CumplimientoID");
+                    b.Property<int?>("VerificacionID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CumplimientoIncisoID");
 
                     b.HasIndex("IncisoID");
 
-                    b.ToTable("Cumplimientos");
+                    b.HasIndex("VerificacionID");
+
+                    b.ToTable("CumplimientoInciso");
+                });
+
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.CumplimientoSubInciso", b =>
+                {
+                    b.Property<int>("CumplimientoIncisoID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Cumple")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Evidencia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubIncisoID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VerificacionID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CumplimientoIncisoID");
+
+                    b.HasIndex("SubIncisoID");
+
+                    b.HasIndex("VerificacionID");
+
+                    b.ToTable("CumplimientoSubInciso");
                 });
 
             modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Incisos", b =>
@@ -137,21 +198,6 @@ namespace MASI_MarcoLegal.Server.Migrations
                     b.HasIndex("ArticuloID");
 
                     b.ToTable("Incisos");
-                });
-
-            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.LeyOrganizacion", b =>
-                {
-                    b.Property<int>("OrganizacionID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LeyID")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrganizacionID", "LeyID");
-
-                    b.HasIndex("LeyID");
-
-                    b.ToTable("LeyesOrganizaciones");
                 });
 
             modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Leyes", b =>
@@ -231,6 +277,34 @@ namespace MASI_MarcoLegal.Server.Migrations
                     b.HasIndex("LeyID");
 
                     b.ToTable("Titulos");
+                });
+
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Verificacion", b =>
+                {
+                    b.Property<int>("VerificacionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("FechaIngreso")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LeyID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizacionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Usuario")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("VerificacionID");
+
+                    b.HasIndex("LeyID");
+
+                    b.HasIndex("OrganizacionID");
+
+                    b.ToTable("Verificacion");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -456,13 +530,43 @@ namespace MASI_MarcoLegal.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Cumplimientos", b =>
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.CumplimientoArticulo", b =>
+                {
+                    b.HasOne("MASI_MarcoLegal.Server.Models.Articulos", "Articulo")
+                        .WithMany("CumplimientoArticulos")
+                        .HasForeignKey("ArticuloID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MASI_MarcoLegal.Server.Models.Verificacion", "Verificacion")
+                        .WithMany()
+                        .HasForeignKey("VerificacionID");
+                });
+
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.CumplimientoInciso", b =>
                 {
                     b.HasOne("MASI_MarcoLegal.Server.Models.Incisos", "Inciso")
-                        .WithMany()
+                        .WithMany("CumplimientoIncisos")
                         .HasForeignKey("IncisoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("MASI_MarcoLegal.Server.Models.Verificacion", "Verificacion")
+                        .WithMany()
+                        .HasForeignKey("VerificacionID");
+                });
+
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.CumplimientoSubInciso", b =>
+                {
+                    b.HasOne("MASI_MarcoLegal.Server.Models.SubIncisos", "SubInciso")
+                        .WithMany("CumplimientoSubIncisos")
+                        .HasForeignKey("SubIncisoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MASI_MarcoLegal.Server.Models.Verificacion", "Verificacion")
+                        .WithMany()
+                        .HasForeignKey("VerificacionID");
                 });
 
             modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Incisos", b =>
@@ -470,21 +574,6 @@ namespace MASI_MarcoLegal.Server.Migrations
                     b.HasOne("MASI_MarcoLegal.Server.Models.Articulos", "Articulo")
                         .WithMany("Incisos")
                         .HasForeignKey("ArticuloID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.LeyOrganizacion", b =>
-                {
-                    b.HasOne("MASI_MarcoLegal.Server.Models.Leyes", "Ley")
-                        .WithMany("LeyesOrganizaciones")
-                        .HasForeignKey("LeyID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MASI_MarcoLegal.Server.Models.Organizacion", "Organizacion")
-                        .WithMany("LeyesOrganizaciones")
-                        .HasForeignKey("OrganizacionID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -503,6 +592,21 @@ namespace MASI_MarcoLegal.Server.Migrations
                     b.HasOne("MASI_MarcoLegal.Server.Models.Leyes", "Ley")
                         .WithMany("Titulos")
                         .HasForeignKey("LeyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MASI_MarcoLegal.Server.Models.Verificacion", b =>
+                {
+                    b.HasOne("MASI_MarcoLegal.Server.Models.Leyes", "Ley")
+                        .WithMany("Verificaciones")
+                        .HasForeignKey("LeyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MASI_MarcoLegal.Server.Models.Organizacion", "Organizacion")
+                        .WithMany("Verificaciones")
+                        .HasForeignKey("OrganizacionID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

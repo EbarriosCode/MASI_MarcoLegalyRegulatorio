@@ -1,17 +1,43 @@
-﻿
-INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Admin', 'ADMIN')
+﻿USE MASI_MarcoLegalDB;
+
+/* Insertar los roles en la BD */
+INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Administrador', 'ADMINISTRADOR')
+INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Supervisor', 'SUPERVISOR')
 INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Empresa', 'EMPRESA')
 
+/* Insertar Marcos Legales a Empresas */
+select * from dbo.LeyesOrganizaciones
+INSERT INTO dbo.LeyesOrganizaciones (OrganizacionID, LeyID) 
+	VALUES (1,1), (2,1), (3,1);
+
+SELECT * FROM Leyes
+SELECT * FROM Articulos
+
+SELECT * FROM dbo.AspNetUsers
+
+select * from dbo.AspNetRoles
 
 SELECT 
-	l.LeyID, l.Descripcion as DescripcionLey, 
-	t.TituloID, t.Descripcion as DescripcionTitulo, 
-	c.CapituloID, c.Descripcion as DescripcionCapitulo, c.Detalle as DetalleCapitulo
+	--l.LeyID, l.Descripcion as DescripcionLey, 
+	--t.TituloID, t.Descripcion as DescripcionTitulo, 
+	--c.CapituloID, c.Descripcion as DescripcionCapitulo, c.Detalle as DetalleCapitulo,
+	--a.ArticuloID, a.Descripcion as DescripcionArticulo, a.Detalle as DetalleArticulo,
+	 i.IncisoID, i.Descripcion as DescripcionInciso, i.Detalle as DetalleInciso, i.Verificable
 FROM Leyes l
 INNER JOIN 
-	Titulos t on l.LeyID = t.LeyID
+	Titulos t ON l.LeyID = t.LeyID
 INNER JOIN 
-	Capitulos c on t.TituloID = c.TituloID
+	Capitulos c ON t.TituloID = c.TituloID
+INNER JOIN 
+	Articulos a ON c.CapituloID = a.CapituloID
+INNER JOIN
+	Incisos i ON a.ArticuloID = i.ArticuloID
+
+
+	WHERE 1 = 1
+	AND l.LeyID = 1 
+	AND i.Verificable = 1
+
 
 
 SELECT 
@@ -21,3 +47,9 @@ SELECT
 FROM Titulos t 
 INNER JOIN Capitulos c ON t.TituloID = c.TituloID
 INNER JOIN Articulos a ON c.CapituloID = a.CapituloID
+
+
+
+select * from Incisos
+
+update Incisos set Verificable = 1 where ArticuloID = 9

@@ -1,0 +1,56 @@
+﻿@page "/Capitulos"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
+
+@if (CapitulosAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Capítulos</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Detalle</th>
+                            <th scope="col">Capitulo</th>
+                            <th scope="col">Ley</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in CapitulosAPI)
+                        {
+                            <tr>
+                                <td scope="row">@item.CapituloID</td>
+                                <td>@item.Descripcion</td>
+                                <td>@item.Detalle</td>
+                                <td>@item.Titulo.Descripcion</td>
+                                <td>@item.Titulo.Ley.Descripcion</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<CapituloViewModel> CapitulosAPI { get; set; }   
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCapitulosAsync();
+    }
+
+    private async Task GetCapitulosAsync()
+    {
+        this.CapitulosAPI = await httpClient.GetFromJsonAsync<List<CapituloViewModel>>("api/MarcoLegal/GetCapitulos");
+        this.CapitulosAPI.OrderBy(c => c.CapituloID);
+    }
+}

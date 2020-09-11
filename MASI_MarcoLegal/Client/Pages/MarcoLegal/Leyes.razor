@@ -1,0 +1,49 @@
+﻿@page "/Leyes"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
+
+@if (LeyesAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Marcos Legales</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in LeyesAPI)
+                        {
+                            <tr>
+                                <td scope="row">@item.LeyID</td>
+                                <td>@item.Descripcion</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<LeyesViewModel> LeyesAPI { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLeyesAsync();
+    }
+
+    private async Task GetLeyesAsync()
+    {
+        LeyesAPI = await httpClient.GetFromJsonAsync<List<LeyesViewModel>>("api/MarcoLegal/GetLeyes");
+    }
+}

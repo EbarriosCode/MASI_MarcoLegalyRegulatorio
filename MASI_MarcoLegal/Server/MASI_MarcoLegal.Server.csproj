@@ -5,6 +5,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200907033009_ModeloSubIncisos.cs" />
+    <Compile Remove="Migrations\20200907033009_ModeloSubIncisos.Designer.cs" />
+    <Compile Remove="Migrations\20200907034305_ModeloTipoVerificacion.cs" />
+    <Compile Remove="Migrations\20200907034305_ModeloTipoVerificacion.Designer.cs" />
+    <Compile Remove="Migrations\20200907054449_ModificacionModeloCumplimiento.cs" />
+    <Compile Remove="Migrations\20200907054449_ModificacionModeloCumplimiento.Designer.cs" />
+    <Compile Remove="Migrations\20200910170908_Modelo_Verificacion_Y_Cumplimientos.cs" />
+    <Compile Remove="Migrations\20200910170908_Modelo_Verificacion_Y_Cumplimientos.Designer.cs" />
+    <Compile Remove="Migrations\20200910172758_Modelo_Verificacion_Y_Cumplimientos.cs" />
+    <Compile Remove="Migrations\20200910172758_Modelo_Verificacion_Y_Cumplimientos.Designer.cs" />
+    <Compile Remove="Migrations\20200910173506_Modelo_Verificacion_Y_Cumplimientos.cs" />
+    <Compile Remove="Migrations\20200910173506_Modelo_Verificacion_Y_Cumplimientos.Designer.cs" />
+    <Compile Remove="Migrations\20200910222045_Modelo_Verificacion_Y_Cumplimientos.cs" />
+    <Compile Remove="Migrations\20200910222045_Modelo_Verificacion_Y_Cumplimientos.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.7" />
@@ -19,6 +36,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\MASI_MarcoLegal.Client.csproj" />
     <ProjectReference Include="..\Shared\MASI_MarcoLegal.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UploadFiles\" />
   </ItemGroup>
 
 

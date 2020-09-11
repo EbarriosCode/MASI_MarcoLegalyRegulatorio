@@ -1,0 +1,56 @@
+﻿@page "/SubIncisos"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
+
+@if (SubIncisosAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Incisos</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Detalle</th>
+                            <th scope="col">Artículo</th>
+                            <th scope="col">Verificable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in SubIncisosAPI)
+                        {
+                            <tr>
+                                <td scope="row">@item.SubIncisoID</td>
+                                <td>@item.Descripcion</td>
+                                <td>@item.Detalle</td>
+                                <td>@item.Inciso.Descripcion</td>
+                                <td>@item.Verificable</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<SubIncisoViewModel> SubIncisosAPI { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetSubIncisosAsync();
+    }
+
+    private async Task GetSubIncisosAsync()
+    {
+        this.SubIncisosAPI = await httpClient.GetFromJsonAsync<List<SubIncisoViewModel>>("api/MarcoLegal/GetSubIncisos");
+    }
+}
+

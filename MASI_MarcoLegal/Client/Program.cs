@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components.Authorization;
 using MASI_MarcoLegal.Client.Auth;
+using Blazor.FileReader;
 
 namespace MASI_MarcoLegal.Client
 {
@@ -17,7 +18,13 @@ namespace MASI_MarcoLegal.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("app");
+            
+            builder.Services.AddFileReaderService(options =>
+            {
+                options.UseWasmSharedBuffer = true;
+            });
+
+            builder.RootComponents.Add<App>("app");           
 
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
@@ -31,7 +38,7 @@ namespace MASI_MarcoLegal.Client
 
             builder.Services.AddScoped<JWTAuthStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider, JWTAuthStateProvider>(provider => provider.GetRequiredService<JWTAuthStateProvider>());
-            builder.Services.AddScoped<ILoginService, JWTAuthStateProvider>(provider => provider.GetRequiredService<JWTAuthStateProvider>());
+            builder.Services.AddScoped<ILoginService, JWTAuthStateProvider>(provider => provider.GetRequiredService<JWTAuthStateProvider>());                        
 
             builder.Services.AddApiAuthorization();
 

@@ -1,0 +1,55 @@
+﻿@page "/Articulos"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
+
+@if (ArticulosAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Artículos</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Detalle</th>
+                            <th scope="col">Capitulo</th>
+                            <th scope="col">Verificable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ArticulosAPI)
+                        {
+                            <tr>
+                                <td scope="row">@item.ArticuloID</td>
+                                <td>@item.Descripcion</td>
+                                <td>@item.Detalle</td>
+                                <td>@item.Capitulo.Descripcion</td>
+                                <td>@item.Verificable</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ArticuloViewModel> ArticulosAPI { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetArticulosAsync();
+    }
+
+    private async Task GetArticulosAsync()
+    {
+        this.ArticulosAPI = await httpClient.GetFromJsonAsync<List<ArticuloViewModel>>("api/MarcoLegal/GetArticulos");        
+    }
+}

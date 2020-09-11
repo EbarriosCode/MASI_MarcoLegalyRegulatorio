@@ -12,6 +12,7 @@ namespace MASI_MarcoLegal.Server.Models
         public int OrganizacionID { get; set; }
         public string Nombre { get; set; }
 
-        public ICollection<LeyOrganizacion> LeyesOrganizaciones { get; set; }
+        //public ICollection<LeyOrganizacion> LeyesOrganizaciones { get; set; }
+        public ICollection<Verificacion> Verificaciones { get; set; }
     }
 }

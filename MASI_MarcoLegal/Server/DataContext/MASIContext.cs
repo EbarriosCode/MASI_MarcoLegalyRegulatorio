@@ -22,26 +22,30 @@ namespace MASI_MarcoLegal.Server.DataContext
         public DbSet<Articulos> Articulos { get; set; }
         public DbSet<Incisos> Incisos { get; set; }
         public DbSet<SubIncisos> SubIncisos { get; set; }
-        public DbSet<LeyOrganizacion> LeyesOrganizaciones { get; set; }
-        public DbSet<Cumplimientos> Cumplimientos { get; set; }
+        //public DbSet<LeyOrganizacion> LeyesOrganizaciones { get; set; }
+
+        public DbSet<Verificacion> Verificaciones { get; set; }
+        public DbSet<CumplimientoArticulo> CumplimientosArticulos { get; set; }
+        public DbSet<CumplimientoInciso> CumplimientosIncisos { get; set; }
+        public DbSet<CumplimientoSubInciso> CumplimientosSubIncisos { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<LeyOrganizacion>()
-                .HasKey(lo=> new { lo.OrganizacionID, lo.LeyID });
+            //modelBuilder.Entity<LeyOrganizacion>()
+            //    .HasKey(lo=> new { lo.OrganizacionID, lo.LeyID });
 
-            modelBuilder.Entity<LeyOrganizacion>()
-                .HasOne(o => o.Organizacion)
-                .WithMany(o => o.LeyesOrganizaciones)
-                .HasForeignKey(o => o.OrganizacionID);
+            //modelBuilder.Entity<LeyOrganizacion>()
+            //    .HasOne(o => o.Organizacion)
+            //    .WithMany(o => o.LeyesOrganizaciones)
+            //    .HasForeignKey(o => o.OrganizacionID);
 
-            modelBuilder.Entity<LeyOrganizacion>()
-                .HasOne(l => l.Ley)
-                .WithMany(l => l.LeyesOrganizaciones)
-                .HasForeignKey(l => l.LeyID);
+            //modelBuilder.Entity<LeyOrganizacion>()
+            //    .HasOne(l => l.Ley)
+            //    .WithMany(l => l.LeyesOrganizaciones)
+            //    .HasForeignKey(l => l.LeyID);
 
             //modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Name = "Empresa", NormalizedName = "EMPRESA", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
             //modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Name = "Admin", NormalizedName = "ADMIN", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });

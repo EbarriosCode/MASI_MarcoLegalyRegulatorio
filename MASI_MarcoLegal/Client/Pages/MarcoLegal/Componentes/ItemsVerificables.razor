@@ -1,0 +1,247 @@
+﻿@inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
+
+
+<div class="row mt-3">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title text-center"><h3>Validación en Proceso</h3></div>
+                <hr>                
+                @*Artículos*@
+                <h5 class="card-title">Articulos</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Detalle</th>
+                                <th scope="col">Verificación</th>
+                                <th scope="col">Evidencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ItemsAPI.Articulos != null)
+                            {
+                                @foreach (var item in ItemsAPI.Articulos)
+                                {
+                                    <tr>
+                                        <td scope="row">@item.Descripcion</td>
+                                        <td>@item.Detalle</td>
+                                        <td>
+                                            <EditForm Model="item">
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label" style="margin-right:10px;">Cumple</label>
+                                                    <InputCheckbox @bind-Value="item.Cumple" class="form-check-input"></InputCheckbox>
+                                                </div>
+                                            </EditForm>
+                                        </td>
+                                        <td>
+                                            @if (item.Cumple)
+                                            {
+                                                @*<InputFile OnChange="HandleSelection"></InputFile>*@
+                                                <input type="file" id="adjunto" />
+                                            }
+                                        </td>
+                                        @if (this.Completado)
+                                        {
+                                            <td><label class="text-center text-info"><strong>Completado</strong></label></td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @*Incisos*@
+                <br />
+                <h5 class="card-title">Incisos</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Detalle</th>
+                                <th scope="col">Verificación</th>
+                                <th scope="col">Evidencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ItemsAPI.Incisos != null)
+                            {
+                                @foreach (var item in ItemsAPI.Incisos)
+                                {
+                                    <tr>
+                                        <td scope="row">@item.Descripcion</td>
+                                        <td>@item.Detalle</td>
+                                        <td>
+                                            <EditForm Model="item">
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label" style="margin-right:10px;">Cumple</label>
+                                                    <InputCheckbox @bind-Value="item.Cumple" class="form-check-input"></InputCheckbox>
+                                                </div>
+                                            </EditForm>
+                                        </td>
+                                        <td>
+                                            @if (item.Cumple)
+                                            {
+                                                <InputFile OnChange="HandleSelection"></InputFile>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @*SubIncisos*@
+                <br />
+                <h5 class="card-title">SubIncisos</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Detalle</th>
+                                <th scope="col">Verificación</th>
+                                <th scope="col">Evidencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ItemsAPI.SubIncisos != null)
+                            {
+                                @foreach (var item in ItemsAPI.SubIncisos)
+                                {
+                                    <tr>
+                                        <td scope="row">@item.Descripcion</td>
+                                        <td>@item.Detalle</td>
+                                        <td>
+                                            <EditForm Model="item">
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label" style="margin-right:10px;">Cumple</label>
+                                                    <InputCheckbox @bind-Value="item.Cumple" class="form-check-input"></InputCheckbox>
+                                                </div>
+                                            </EditForm>
+                                        </td>
+                                        <td>
+                                            @if (item.Cumple)
+                                            {
+                                                @*<InputFile @bind-Value="item.Evidencia"></InputFile>*@
+                                            }
+                                        </td>
+                                        @if (this.Completado)
+                                        {
+                                            <td><label class="text-center text-info"><strong>Completado</strong></label></td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />  <br />
+                <div class="form-group">
+                    <button type="button" class="btn btn-light px-5" @onclick="async ()=> await UpFile()"><i class="zmdi zmdi-badge-check"></i> Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1>@message</h1>
+</div>
+
+@code
+{
+    [Parameter]
+    public int LeyID { get; set; }
+    [Parameter]
+    public int OrganizacionID { get; set; }
+
+    private ItemsVerificablesViewModel ItemsAPI { get; set; } = new ItemsVerificablesViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.ItemsAPI = await httpClient.GetFromJsonAsync<ItemsVerificablesViewModel>($"api/MarcoLegal/GetItemsVerificables/{this.LeyID}");
+    }
+
+
+    private string status;
+    private bool Completado;
+
+    private async Task HandleSelection(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            var memoryStream = new MemoryStream();
+            await file.Data.CopyToAsync(memoryStream);
+
+            status = $"Upload {file.Size} bytes de {file.Name}";
+
+            var content = new MultipartFormDataContent()
+    {
+                {new ByteArrayContent(memoryStream.GetBuffer()), "\"Upload\"", file.Name }
+            };
+
+            await httpClient.PostAsync("api/UploadFile/Upload", content);
+
+            this.Completado = true;
+        }
+    }
+
+    ElementReference inputReference;
+    Stream fileStream = null;
+    string fileName = string.Empty;
+    string message = string.Empty;
+    string imagePath = null;
+
+    private async Task UploadFileAsync()
+    {
+        //// Read the files
+        //var file = (await fileReader.CreateReference(inputReference).EnumerateFilesAsync()).FirstOrDefault();
+
+        //if (file == null)
+        //    return;
+
+        //var fileInfo = await file.ReadFileInfoAsync();
+        //fileName = fileInfo.Name;
+
+        // Create the content
+        var content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
+
+        content.Add(new StreamContent(fileStream, (int)fileStream.Length), "image", fileName);
+
+        string url = "https://localhost:44345";
+
+        var response = await httpClient.PostAsync("api/UploadFile", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var uploadedFileName = await response.Content.ReadAsStringAsync();
+            imagePath = $"{url}/{uploadedFileName}";
+            message = "Archivo Subido Correctamente!";
+        }
+    }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private async Task SendAll()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        Console.WriteLine("AQUÍ SE ENVIA TODO");
+        foreach (var item in this.ItemsAPI.Articulos)
+        {
+            Console.WriteLine($"{item.ArticuloID} {item.Descripcion} Cumple: {item.Cumple} Evidencia:{item.Evidencia} Usuario:{user.Identity.Name}");
+        }
+    }
+
+    private async Task UpFile()
+    {
+        var result = await JSRuntime.InvokeAsync<string>("hello");
+    }
+}

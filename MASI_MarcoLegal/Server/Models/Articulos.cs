@@ -17,5 +17,6 @@ namespace MASI_MarcoLegal.Server.Models
         public bool Verificable { get; set; }
 
         public ICollection<Incisos> Incisos { get; set; }
+        public ICollection<CumplimientoArticulo> CumplimientoArticulos { get; set; }
     }
 }

@@ -11,13 +11,28 @@ namespace MASI_MarcoLegal.Server.DataContext.Data
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var _context = new MASIContext(serviceProvider.GetRequiredService<DbContextOptions<MASIContext>>()))
-            {                
+            {
+                // Agregando Organizaciones a la BD
+                if (_context.Organizaciones.Any()) return;
+
+                var organizaciones = new Organizacion[]
+                {
+                     new Organizacion { Nombre = "Banco de Guatemala" },
+                    new Organizacion { Nombre = "Asociación de Azucareros de Guatemala (ASAZGUA)" },
+                    new Organizacion { Nombre = "Ministerio Público (MP)" },
+                    new Organizacion { Nombre = "Empresa Fantasma S.A." } 
+                };
+
+                _context.Organizaciones.AddRange(organizaciones);
+                _context.SaveChanges();
+
                 // Agregando Leyes a la BD
                 if (_context.Leyes.Any()) return;
 
                 var leyes = new Leyes[]
                 {
-                    new Leyes { Descripcion = "Reglamento de Seguridad Cibernética y de la Información – GDC (República Dominicana)" }
+                    new Leyes { Descripcion = "Reglamento de Seguridad Cibernética y de la Información – GDC (República Dominicana)" },
+                    new Leyes { Descripcion = "JUNTA MONETARIA Resolución JM-42-2020" }
                 };
 
                 _context.Leyes.AddRange(leyes);
@@ -168,7 +183,7 @@ namespace MASI_MarcoLegal.Server.DataContext.Data
                     {
                         Descripcion = "Artículo 1.",
                         Detalle = "Objeto.",
-                        CapituloID = capitulos.FirstOrDefault(c => c.Detalle.Contains(capitulos[0].Detalle)).CapituloID
+                        CapituloID = capitulos.FirstOrDefault(c => c.Detalle.Contains(capitulos[0].Detalle)).CapituloID                        
                     },
                     new Articulos()
                     {
@@ -254,7 +269,8 @@ namespace MASI_MarcoLegal.Server.DataContext.Data
                     {
                         Descripcion = "Artículo 15.",
                         Detalle = "Metodologías para la Gestión de Riesgos Tecnológicos.",
-                        CapituloID = capitulos.FirstOrDefault(c => c.Detalle.Contains(capitulos[3].Detalle)).CapituloID
+                        CapituloID = capitulos.FirstOrDefault(c => c.Detalle.Contains(capitulos[3].Detalle)).CapituloID,
+                        Verificable = true
                     }
                 };
 
@@ -268,14 +284,59 @@ namespace MASI_MarcoLegal.Server.DataContext.Data
                 {
                     new Incisos()
                     {
-                        Descripcion = "",
+                        Descripcion = "a) Bancos Múltiples",
                         Detalle = "",
-                        ArticuloID = 1
+                        ArticuloID = articulos.FirstOrDefault(a => a.Detalle.Contains(articulos[2].Detalle)).ArticuloID,
+                        Verificable = true
+                    },
+                    new Incisos()
+                    {
+                        Descripcion = "b) Bancos de Ahorro y Crédito",
+                        Detalle = "",
+                        ArticuloID = articulos.FirstOrDefault(a => a.Detalle.Contains(articulos[2].Detalle)).ArticuloID,
+                        Verificable = true
+                    },
+                    new Incisos()
+                    {
+                        Descripcion = "c) Corporaciones de Crédito",
+                        Detalle = "",
+                        ArticuloID = articulos.FirstOrDefault(a => a.Detalle.Contains(articulos[2].Detalle)).ArticuloID,
+                        Verificable = true
+                    },
+                    new Incisos()
+                    {
+                        Descripcion = "d) Asociaciones de Ahorros y Préstamos",
+                        Detalle = "",
+                        ArticuloID = articulos.FirstOrDefault(a => a.Detalle.Contains(articulos[2].Detalle)).ArticuloID,
+                        Verificable = true
+                    },                    
+                    new Incisos()
+                    {
+                        Descripcion = "a) Principios de Cooperación",
+                        Detalle = "Cooperar de forma abierta, eficaz y transparente para el intercambio de la información que sea pertinente",
+                        ArticuloID = articulos.FirstOrDefault(a => a.Detalle.Contains(articulos[3].Detalle)).ArticuloID
+                    },
+                    new Incisos()
+                    {
+                        Descripcion = "b) Principio de Territoralidad",
+                        Detalle = "Gestionar los riesgos de seguridad cibernética y de la información en los casos en que la amenza tenga incidencia en la república dominicama",
+                        ArticuloID = articulos.FirstOrDefault(a => a.Detalle.Contains(articulos[3].Detalle)).ArticuloID
                     }
                 };
 
                 _context.Incisos.AddRange(incisos);
                 _context.SaveChanges();
+
+                //// Agregar SubIncisos              
+                //if (_context.SubIncisos.Any()) return;
+
+                //var subIncisos = new SubIncisos[]
+                //{ 
+                
+                //};
+
+                //_context.SubIncisos.AddRange(subIncisos);
+                //_context.SaveChanges();
             }
         }
 

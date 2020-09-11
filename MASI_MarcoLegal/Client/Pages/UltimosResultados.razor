@@ -1,10 +1,49 @@
 ﻿@page "/Recientes"
-@attribute [Authorize(Roles ="Admin")]
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador, Supervisor")]
 
-<h3>UltimosResultados</h3>
-
-Solo para Admins
+@if (LeyOrganizacionesAPI == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Evaluaciones Recientes</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Empresa</th>
+                            <th scope="col">Marco Legal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in LeyOrganizacionesAPI)
+                        {
+                            <tr>
+                                <td scope="row">@item.Organizacion.Nombre</td>
+                                <td>@item.Ley.Descripcion</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
+    private List<LeyOrganizacionViewModel> LeyOrganizacionesAPI { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLeyOrganizacionesAsync();
+    }
+
+    private async Task GetLeyOrganizacionesAsync()
+    {
+        LeyOrganizacionesAPI = await httpClient.GetFromJsonAsync<List<LeyOrganizacionViewModel>>("api/MarcoLegal/GetLeyesOrganizaciones");
+    }
 }

@@ -15,5 +15,7 @@ namespace MASI_MarcoLegal.Server.Models
         public int IncisoID { get; set; }
         public Incisos Inciso { get; set; }
         public bool Verificable { get; set; }
+
+        public ICollection<CumplimientoSubInciso> CumplimientoSubIncisos { get; set; }
     }
 }
