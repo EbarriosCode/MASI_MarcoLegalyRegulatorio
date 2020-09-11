@@ -13,7 +13,6 @@ namespace MASI_MarcoLegal.Shared.ViewModels
         public CapituloViewModel Capitulo { get; set; }
         public bool Verificable { get; set; }
         public bool Cumple { get; set; }
-        public string Evidencia { get; set; }
-        public string User { get; set; }
+        public string Evidencia { get; set; }        
     }
 }

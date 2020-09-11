@@ -15,9 +15,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
-using Microsoft.Extensions.FileProviders;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 
 namespace MASI_MarcoLegal.Server
 {
@@ -55,7 +52,7 @@ namespace MASI_MarcoLegal.Server
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-                            ValidateAudience = true,
+                            ValidateAudience = false,
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
                             ValidIssuer = Configuration["JwtIssuer"],
@@ -87,7 +84,7 @@ namespace MASI_MarcoLegal.Server
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();            
+            app.UseStaticFiles();
 
             app.UseRouting();
 

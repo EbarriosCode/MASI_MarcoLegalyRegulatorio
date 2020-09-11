@@ -5,13 +5,15 @@ INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Adminis
 INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Supervisor', 'SUPERVISOR')
 INSERT INTO dbo.AspNetRoles (Id, Name, NormalizedName) VALUES (NewID(), 'Empresa', 'EMPRESA')
 
+SELECT * FROM dbo.AspNetRoles
+
 /* Insertar Marcos Legales a Empresas */
 select * from dbo.LeyesOrganizaciones
 INSERT INTO dbo.LeyesOrganizaciones (OrganizacionID, LeyID) 
 	VALUES (1,1), (2,1), (3,1);
 
 SELECT * FROM Leyes
-SELECT * FROM Articulos
+SELECT * FROM Articulos where Verificable = 1
 
 SELECT * FROM dbo.AspNetUsers
 
@@ -21,7 +23,7 @@ SELECT
 	--l.LeyID, l.Descripcion as DescripcionLey, 
 	--t.TituloID, t.Descripcion as DescripcionTitulo, 
 	--c.CapituloID, c.Descripcion as DescripcionCapitulo, c.Detalle as DetalleCapitulo,
-	--a.ArticuloID, a.Descripcion as DescripcionArticulo, a.Detalle as DetalleArticulo,
+	a.ArticuloID, a.Descripcion as DescripcionArticulo, a.Detalle as DetalleArticulo,
 	 i.IncisoID, i.Descripcion as DescripcionInciso, i.Detalle as DetalleInciso, i.Verificable
 FROM Leyes l
 INNER JOIN 
@@ -32,11 +34,10 @@ INNER JOIN
 	Articulos a ON c.CapituloID = a.CapituloID
 INNER JOIN
 	Incisos i ON a.ArticuloID = i.ArticuloID
-
-
 	WHERE 1 = 1
 	AND l.LeyID = 1 
-	AND i.Verificable = 1
+	AND a.Verificable = 1 
+	and i.Verificable = 1
 
 
 
@@ -53,3 +54,7 @@ INNER JOIN Articulos a ON c.CapituloID = a.CapituloID
 select * from Incisos
 
 update Incisos set Verificable = 1 where ArticuloID = 9
+
+
+
+SELECT * FROM Verificacion

@@ -1,6 +1,4 @@
 ﻿@inject HttpClient httpClient
-@inject IJSRuntime JSRuntime
-
 
 <div class="row mt-3">
     <div class="col-lg-12">
@@ -39,13 +37,21 @@
                                         <td>
                                             @if (item.Cumple)
                                             {
-                                                @*<InputFile OnChange="HandleSelection"></InputFile>*@
-                                                <input type="file" id="adjunto" />
+                                                <InputFile OnChange="HandleSelection" value="@item.Evidencia" />
+                                                @*@if (fileTemp != null)
+                                                {
+                                                    
+                                                    item.Evidencia = fileTemp.Name;
+                                                }*@
+                                                @*<input type="file" name="adjunto" @bind="item.Evidencia"/>*@
+                                                @*<form  enctype="multipart/form-data" id="myform" class="myForm">
+                                                    <input type="file" name="adjunto[]" @bind="item.Evidencia" multiple="multiple"/>
+                                                </form>*@
                                             }
                                         </td>
                                         @if (this.Completado)
                                         {
-                                            <td><label class="text-center text-info"><strong>Completado</strong></label></td>
+                                            <td><label class="text-center text-info"><strong>Verificado</strong></label></td>
                                         }
                                     </tr>
                                 }
@@ -55,14 +61,13 @@
                 </div>
 
                 @*Incisos*@
-                <br />
+                <br /><br />
                 <h5 class="card-title">Incisos</h5>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Descripción</th>
-                                <th scope="col">Detalle</th>
+                                <th scope="col">Descripción</th>                                
                                 <th scope="col">Verificación</th>
                                 <th scope="col">Evidencia</th>
                             </tr>
@@ -73,8 +78,7 @@
                                 @foreach (var item in ItemsAPI.Incisos)
                                 {
                                     <tr>
-                                        <td scope="row">@item.Descripcion</td>
-                                        <td>@item.Detalle</td>
+                                        <td scope="row">@item.Descripcion</td>                                        
                                         <td>
                                             <EditForm Model="item">
                                                 <div class="form-check-inline">
@@ -86,9 +90,18 @@
                                         <td>
                                             @if (item.Cumple)
                                             {
-                                                <InputFile OnChange="HandleSelection"></InputFile>
+                                                <InputFile OnChange="HandleSelection" value="@item.Evidencia"/>
+                                                
+                                                @*<input type="file" @bind="item.Evidencia"/>*@
+                                                @*<form  enctype="multipart/form-data" id="myform" class="myForm">
+                                                    <input type="file" name="adjunto[]" @bind="item.Evidencia" multiple="multiple"/>
+                                                </form>*@
                                             }
                                         </td>
+                                        @if (this.Completado)
+                                        {
+                                            <td><label class="text-center text-info"><strong>Verificado</strong></label></td>
+                                        }
                                     </tr>
                                 }
                             }
@@ -97,14 +110,13 @@
                 </div>
 
                 @*SubIncisos*@
-                <br />
+                <br /><br />
                 <h5 class="card-title">SubIncisos</h5>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Descripción</th>
-                                <th scope="col">Detalle</th>
+                                <th scope="col">Descripción</th>                                
                                 <th scope="col">Verificación</th>
                                 <th scope="col">Evidencia</th>
                             </tr>
@@ -115,8 +127,7 @@
                                 @foreach (var item in ItemsAPI.SubIncisos)
                                 {
                                     <tr>
-                                        <td scope="row">@item.Descripcion</td>
-                                        <td>@item.Detalle</td>
+                                        <td scope="row">@item.Descripcion</td>                                        
                                         <td>
                                             <EditForm Model="item">
                                                 <div class="form-check-inline">
@@ -127,13 +138,13 @@
                                         </td>
                                         <td>
                                             @if (item.Cumple)
-                                            {
-                                                @*<InputFile @bind-Value="item.Evidencia"></InputFile>*@
+                                            {                                                
+                                            <InputFile OnChange="HandleSelection" value="@item.Evidencia" />
                                             }
                                         </td>
                                         @if (this.Completado)
                                         {
-                                            <td><label class="text-center text-info"><strong>Completado</strong></label></td>
+                                            <td><label class="text-center text-info"><strong>Verificado</strong></label></td>
                                         }
                                     </tr>
                                 }
@@ -142,13 +153,17 @@
                     </table>
                 </div>
                 <br />  <br />
+                @if (this.Completado)
+                {
+                    <h2 class="text-center text-info">Proceso de Verificación Completado</h2>
+                }
+                <br />
                 <div class="form-group">
-                    <button type="button" class="btn btn-light px-5" @onclick="async ()=> await UpFile()"><i class="zmdi zmdi-badge-check"></i> Enviar</button>
+                    <button type="button" class="btn btn-light px-5" @onclick="async ()=> await SendAll()"><i class="zmdi zmdi-badge-check"></i> Procesar</button>
                 </div>
             </div>
         </div>
-    </div>
-    <h1>@message</h1>
+    </div>    
 </div>
 
 @code
@@ -165,65 +180,7 @@
         this.ItemsAPI = await httpClient.GetFromJsonAsync<ItemsVerificablesViewModel>($"api/MarcoLegal/GetItemsVerificables/{this.LeyID}");
     }
 
-
-    private string status;
     private bool Completado;
-
-    private async Task HandleSelection(IFileListEntry[] files)
-    {
-        var file = files.FirstOrDefault();
-        if (file != null)
-        {
-            var memoryStream = new MemoryStream();
-            await file.Data.CopyToAsync(memoryStream);
-
-            status = $"Upload {file.Size} bytes de {file.Name}";
-
-            var content = new MultipartFormDataContent()
-    {
-                {new ByteArrayContent(memoryStream.GetBuffer()), "\"Upload\"", file.Name }
-            };
-
-            await httpClient.PostAsync("api/UploadFile/Upload", content);
-
-            this.Completado = true;
-        }
-    }
-
-    ElementReference inputReference;
-    Stream fileStream = null;
-    string fileName = string.Empty;
-    string message = string.Empty;
-    string imagePath = null;
-
-    private async Task UploadFileAsync()
-    {
-        //// Read the files
-        //var file = (await fileReader.CreateReference(inputReference).EnumerateFilesAsync()).FirstOrDefault();
-
-        //if (file == null)
-        //    return;
-
-        //var fileInfo = await file.ReadFileInfoAsync();
-        //fileName = fileInfo.Name;
-
-        // Create the content
-        var content = new MultipartFormDataContent();
-        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
-
-        content.Add(new StreamContent(fileStream, (int)fileStream.Length), "image", fileName);
-
-        string url = "https://localhost:44345";
-
-        var response = await httpClient.PostAsync("api/UploadFile", content);
-
-        if (response.IsSuccessStatusCode)
-        {
-            var uploadedFileName = await response.Content.ReadAsStringAsync();
-            imagePath = $"{url}/{uploadedFileName}";
-            message = "Archivo Subido Correctamente!";
-        }
-    }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -234,14 +191,41 @@
         var user = authState.User;
 
         Console.WriteLine("AQUÍ SE ENVIA TODO");
-        foreach (var item in this.ItemsAPI.Articulos)
-        {
-            Console.WriteLine($"{item.ArticuloID} {item.Descripcion} Cumple: {item.Cumple} Evidencia:{item.Evidencia} Usuario:{user.Identity.Name}");
-        }
+
+        // Subir adjuntos con JS
+        //var result = await JSRuntime.InvokeAsync<string>("UploadFile");
+
+
+        this.ItemsAPI.LeyID = LeyID;
+        this.ItemsAPI.OrganizacionID = OrganizacionID;
+        this.ItemsAPI.User = user.Identity.Name;
+
+        await httpClient.PostAsJsonAsync("api/MarcoLegal/InsertCumplimientos", this.ItemsAPI);
+
+        this.Completado = true;
     }
 
-    private async Task UpFile()
+    // Subir archivos
+    string status;
+    IFileListEntry file;
+
+    async Task HandleSelection(IFileListEntry[] files)
     {
-        var result = await JSRuntime.InvokeAsync<string>("hello");
+        file = files.FirstOrDefault();
+        if (file != null)
+        {           
+            // Just load into .NET memory to show it can be done
+            // Alternatively it could be saved to disk, or parsed in memory, or similar
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+
+            status = $"Archivo Cargado {file.Name}";
+
+            var content = new MultipartFormDataContent {
+                { new ByteArrayContent(ms.GetBuffer()), "\"UploadFiles\"", file.Name }
+            };
+            
+            await httpClient.PostAsync("api/UploadFile/Upload", content);
+        }
     }
 }

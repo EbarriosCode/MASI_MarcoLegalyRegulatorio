@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,14 +46,17 @@ namespace MASI_MarcoLegal.Server.Controllers
             return Ok($"UploadFiles/{newFileName}");
         }
 
-        [HttpPost("Upload")]
-        public async Task Upload()
+        [HttpPost("Upload")]      
+        public async Task<string> Upload()
         {
+            string pathFile = string.Empty;
+
             if (HttpContext.Request.Form.Files.Any())
             {
                 foreach (var file in HttpContext.Request.Form.Files)
                 {
-                    var path = Path.Combine(this._environment.ContentRootPath, "Upload", file.FileName);
+                    var path = Path.Combine(this._environment.ContentRootPath, "UploadFiles", file.FileName);
+                    pathFile = Path.Combine("UploadFiles", file.FileName);
 
                     using(var stream = new FileStream(path, FileMode.Create))
                     {
@@ -60,6 +64,7 @@ namespace MASI_MarcoLegal.Server.Controllers
                     }
                 }
             }
+            return pathFile;
         }
     }
 }

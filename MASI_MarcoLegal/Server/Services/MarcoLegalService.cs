@@ -20,6 +20,7 @@ namespace MASI_MarcoLegal.Server.Services
         Task<IEnumerable<Incisos>> GetIncisosAsync();
         Task<IEnumerable<SubIncisos>> GetSubIncisosAsync();
         Task<ItemsVerificablesViewModel> GetItemsVerificablesAsync(int LeyID);
+        Task<bool> CreateVerificacionAsync(ItemsVerificablesViewModel model);
     }
     public class MarcoLegalService : IMarcolegalService
     {
@@ -240,6 +241,77 @@ namespace MASI_MarcoLegal.Server.Services
             }
 
             return items;
+        }
+
+        public async Task<bool> CreateVerificacionAsync(ItemsVerificablesViewModel model)
+        {
+            bool created = false;
+            try
+            {
+                if(model != null)
+                {
+                    if(model.LeyID > 0 && model.OrganizacionID > 0)
+                    {
+                        // Insertar en la tabla Verificacion
+                        var verificacion = new Verificacion()
+                        {
+                            LeyID = model.LeyID,
+                            OrganizacionID = model.OrganizacionID,
+                            FechaIngreso = DateTime.Now,
+                            Usuario = model.User
+                        };
+
+                        _context.Verificaciones.Add(verificacion) ;
+                        await _context.SaveChangesAsync();
+
+                        if(model.Articulos.Count > 0)
+                        {
+                            var cumplimientoArticulos = model.Articulos.Select(a => new CumplimientoArticulo
+                            {
+                                VerificacionID = verificacion.VerificacionID,
+                                Cumple = a.Cumple,
+                                Evidencia = a.Evidencia,
+                                ArticuloID = a.ArticuloID,                                
+                            });
+                            _context.CumplimientosArticulos.AddRange(cumplimientoArticulos);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        if (model.Incisos.Count > 0)
+                        {
+                            var cumplimientoIncisos = model.Incisos.Select(i => new CumplimientoInciso
+                            {
+                                VerificacionID = verificacion.VerificacionID,
+                                Cumple = i.Cumple,
+                                Evidencia = i.Evidencia,
+                                IncisoID = i.IncisoID,
+                            });
+                            _context.CumplimientosIncisos.AddRange(cumplimientoIncisos);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        if (model.SubIncisos.Count > 0)
+                        {
+                            var cumplimientoSubIncisos = model.SubIncisos.Select(si => new CumplimientoSubInciso
+                            {
+                                VerificacionID = verificacion.VerificacionID,
+                                Cumple = si.Cumple,
+                                Evidencia = si.Evidencia,
+                                SubIncisoID = si.SubIncisoID,
+                            });
+                            _context.CumplimientosSubIncisos.AddRange(cumplimientoSubIncisos);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    created = true;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return created;
         }
     }
 }
