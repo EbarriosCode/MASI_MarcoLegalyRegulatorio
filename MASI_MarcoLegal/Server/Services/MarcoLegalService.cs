@@ -20,6 +20,7 @@ namespace MASI_MarcoLegal.Server.Services
         Task<IEnumerable<Incisos>> GetIncisosAsync();
         Task<IEnumerable<SubIncisos>> GetSubIncisosAsync();
         Task<ItemsVerificablesViewModel> GetItemsVerificablesAsync(int LeyID);
+        Task<IEnumerable<Verificacion>> GetVerificacionesAsync();
     }
     public class MarcoLegalService : IMarcolegalService
     {
@@ -240,6 +241,26 @@ namespace MASI_MarcoLegal.Server.Services
             }
 
             return items;
+        }
+
+       
+        public async Task<IEnumerable<Verificacion>> GetVerificacionesAsync()
+        {
+            var Verificaciones = new List<Verificacion>();
+            try
+            {
+
+                Verificaciones = await this._context.Verificaciones.Include(l => l.Ley)
+                                            .Include(o => o.Organizacion)
+                                            .OrderBy(a => a.FechaIngreso)
+                                            .ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Verificaciones;
         }
     }
 }

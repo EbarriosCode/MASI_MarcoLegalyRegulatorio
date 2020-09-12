@@ -1,7 +1,279 @@
 ﻿@page "/Resultados"
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Administrador")]
 
-<h3>Resultados</h3>
+
+
+<div class="row mt-3">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title text-center"><h3>Seleccionar Verificación</h3></div>
+                <hr>
+                <EditForm Model="@VerificacionId"
+                          OnValidSubmit="@HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="form-group">
+                        <label for="input-1">Verificación</label>
+                        <InputSelectNumber class="form-control"
+                                           @bind-Value="VerificacionId">
+                            <option value="0">-- Seleccionar Verificación</option>
+                            @if (Verificaciones != null)
+                            {
+
+                                @foreach (var item in Verificaciones)
+                                {
+                                    <option value="@item.VerificacionID">(@item.Organizacion.Nombre) - (@item.Ley.Descripcion) - (@item.FechaIngreso.Date.ToString("dd/MM/yyyy"))</option>
+                                }
+
+                            }
+                        </InputSelectNumber>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-light px-5"><i class="zmdi zmdi-badge-check"></i> Ver Resultado</button>
+                    </div>
+                </EditForm>
+            </div>
+
+            <h5 class="text-center text-warning">@this.Message</h5>
+            <br />
+        </div>
+    </div>
+</div>
+
+<hr />
+
+@if (Resultado != null)
+{
+
+    <div class="card mt-3">
+        <div class="card-content">
+            <div class="row row-group m-0">
+                <div class="col-12 col-lg-6 col-xl-3 border-light">
+                    <div class="card-body">
+                        <h5 class="text-white mb-0">Cumplimiento Total <span class="float-right">@Resultado.TotalVerificables</span></h5>
+                        <div class="progress my-3" style="height:3px;">
+                            <div class="progress-bar" style="width:@Decimal.Round(@Resultado.PorcentajeCumplimientoTotal)%"></div>
+                        </div>
+                        <p class="mb-0 text-white small-font">Cumplimiento <span class="float-right">+@Decimal.Round(@Resultado.PorcentajeCumplimientoTotal) % <i class="zmdi zmdi-long-arrow-up"></i></span></p>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 col-xl-3 border-light" @onclick="OnClickArticulo" >
+                    <div class="card-body">
+                        <h5 class="text-white mb-0">Artículos <span class="float-right">@Resultado.ArticulosVerificables</span></h5>
+                        <div class="progress my-3" style="height:3px;">
+                            <div class="progress-bar" style="width:@Decimal.Round(@Resultado.PorcentajeCumplimientoArticulo)%"></div>
+                        </div>
+                        <p class="mb-0 text-white small-font">Cumplimiento <span class="float-right">+@Decimal.Round(@Resultado.PorcentajeCumplimientoArticulo) % <i class="zmdi zmdi-long-arrow-up"></i></span></p>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 col-xl-3 border-light" @onclick="OnClickInciso">
+                    <div class="card-body">
+                        <h5 class="text-white mb-0">Incisos <span class="float-right">@Resultado.IncisoVerificables</span></h5>
+                        <div class="progress my-3" style="height:3px;">
+                            <div class="progress-bar" style="width:@Decimal.Round(@Resultado.PorcentajeCumplimientoInciso)%"></div>
+                        </div>
+                        <p class="mb-0 text-white small-font">Cumplimiento <span class="float-right">+@Decimal.Round(@Resultado.PorcentajeCumplimientoInciso) % <i class="zmdi zmdi-long-arrow-up"></i></span></p>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 col-xl-3 border-light" @onclick="OnClickSubInciso">
+                    <div class="card-body">
+                        <h5 class="text-white mb-0">SubIncisos <span class="float-right">@Resultado.SubIncisoVerificables</span></h5>
+                        <div class="progress my-3" style="height:3px;">
+                            <div class="progress-bar" style="width:@Decimal.Round(@Resultado.PorcentajeCumplimientoSubInciso)%"></div>
+                        </div>
+                        <p class="mb-0 text-white small-font">Cumplimiento <span class="float-right">+@Decimal.Round(@Resultado.PorcentajeCumplimientoSubInciso) % <i class="zmdi zmdi-long-arrow-up"></i></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (VerificacionId > 0 && DetalleArticulos != null || VerificacionId > 0 && DetalleIncisos != null || VerificacionId > 0 && DetalleSubIncisos != null)
+{
+        <h3>Detalle @tituloDetalle</h3>
+        <div class="row">
+            <div class="col-12 col-lg-12">
+                <div class="card">
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Cumple</th>
+                                <th>No Cumple</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (DetalleArticulos != null)
+                            {
+
+                                @foreach (var item in DetalleArticulos)
+                                {
+                            <tr>
+                                <td>@item.Descripcion 5</td>
+                                <td>
+                                    @if (@item.Cumple)
+                                    {
+                                        <i class="zmdi zmdi-check-all"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!@item.Cumple)
+                                    {
+                                        <i class="zmdi zmdi-check-all"></i>
+                                    }
+                                </td>
+                            </tr>
+                                }
+
+                            }
+
+                            @if (DetalleIncisos != null)
+                            {
+                                @foreach (var item in DetalleIncisos)
+                                {
+                                    <tr>
+                                        <td>@item.Descripcion 5</td>
+                                        <td>
+                                    @if (@item.Cumple)
+                                    {
+                                        <i class="zmdi zmdi-check-all"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!@item.Cumple)
+                                    {
+                                        <i class="zmdi zmdi-check-all"></i>
+                                    }
+                                </td>
+                                    </tr>
+                                }
+                            }
+
+
+                            @if (DetalleSubIncisos != null)
+                            {
+                                @foreach (var item in DetalleSubIncisos)
+                                {
+                        <tr>
+                            <td>@item.Descripcion 5</td>
+                            <td>
+                                @if (@item.Cumple)
+                                {
+                                    <i class="zmdi zmdi-check-all"></i>
+                                }
+                            </td>
+                            <td>
+                                @if (!@item.Cumple)
+                                {
+                                    <i class="zmdi zmdi-check-all"></i>
+                                }
+                            </td>
+                        </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+}
 
 @code {
+    private int VerificacionId { set; get; }
 
+    private List<VerificacionViewModel> Verificaciones { set; get; }
+
+    private ResultadosViewModel Resultado { set; get; }
+
+    private List<DetalleResultadoViewModel> DetalleArticulos { set; get; }
+    private List<DetalleResultadoViewModel> DetalleIncisos { set; get; }
+    private List<DetalleResultadoViewModel> DetalleSubIncisos { set; get; }
+
+    private string Message;
+    private string tituloDetalle;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Verificaciones = await httpClient.GetFromJsonAsync<List<VerificacionViewModel>>("api/MarcoLegal/GetVerificaciones");
+
+    }
+
+
+
+    private async Task HandleSubmit()
+    {
+
+        if (VerificacionId > 0)
+        {
+            Console.WriteLine("api/Resultados/GetResultado/" + VerificacionId);
+            this.Message = string.Empty;
+            this.Resultado = await httpClient.GetFromJsonAsync<ResultadosViewModel>("api/Resultados/GetResultado/" + VerificacionId);
+
+        }
+        else
+        {
+            this.Message = "Debe seleccionar una Verificación";
+        }
+    }
+
+    private async Task OnClickArticulo()
+    {
+        Console.WriteLine("api/Resultados/GetDetalleArticulos/" + VerificacionId);
+
+        if (VerificacionId > 0)
+        {
+            this.Message = string.Empty;
+            this.DetalleArticulos = await httpClient.GetFromJsonAsync<List<DetalleResultadoViewModel>>("api/Resultados/GetDetalleArticulos/" + VerificacionId);
+            this.DetalleIncisos = null;
+            this.DetalleSubIncisos = null;
+            this.tituloDetalle = "Artículos";
+            Console.WriteLine("api/Resultados/GetDetalleArticulos/" + VerificacionId);
+        }
+        else
+        {
+            this.Message = "Debe seleccionar una Verificación";
+        }
+    }
+
+    private async Task OnClickInciso()
+    {
+
+        if (VerificacionId > 0)
+        {
+            this.Message = string.Empty;
+            this.DetalleIncisos = await httpClient.GetFromJsonAsync<List<DetalleResultadoViewModel>>("api/Resultados/GetDetalleIncisos/" + VerificacionId);
+            this.DetalleArticulos = null;
+            this.DetalleSubIncisos = null;
+            this.tituloDetalle = "Incisos";
+        }
+        else
+        {
+            this.Message = "Debe seleccionar una Verificación";
+        }
+    }
+
+    private async Task OnClickSubInciso()
+    {
+
+        if (VerificacionId > 0)
+        {
+            this.Message = string.Empty;
+            this.DetalleSubIncisos = await httpClient.GetFromJsonAsync<List<DetalleResultadoViewModel>>("api/Resultados/GetDetalleSubIncisos/" + VerificacionId);
+            this.DetalleArticulos = null;
+            this.DetalleIncisos = null;
+            this.tituloDetalle = "SubIncisos";
+        }
+        else
+        {
+            this.Message = "Debe seleccionar una Verificación";
+        }
+    }
 }
