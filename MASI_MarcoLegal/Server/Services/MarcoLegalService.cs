@@ -27,6 +27,7 @@ namespace MASI_MarcoLegal.Server.Services
         Task<bool> CreateArticuloAsync(ArticuloViewModel model);
         Task<bool> CreateIncisoAsync(IncisoViewModel model);
         Task<bool> CreateSubIncisoAsync(SubIncisoViewModel model);
+        Task<IEnumerable<Verificacion>> GetVerificacionesAsync();
     }
     public class MarcoLegalService : IMarcolegalService
     {
@@ -387,6 +388,25 @@ namespace MASI_MarcoLegal.Server.Services
                 throw;
             }
             return created;
+        }
+
+        public async Task<IEnumerable<Verificacion>> GetVerificacionesAsync()
+        {
+            var Verificaciones = new List<Verificacion>();
+            try
+            {
+
+                Verificaciones = await this._context.Verificaciones.Include(l => l.Ley)
+                                            .Include(o => o.Organizacion)
+                                            .OrderBy(a => a.FechaIngreso)                                            
+                                            .ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Verificaciones;
         }
 
         public async Task<bool> CreateArticuloAsync(ArticuloViewModel model)

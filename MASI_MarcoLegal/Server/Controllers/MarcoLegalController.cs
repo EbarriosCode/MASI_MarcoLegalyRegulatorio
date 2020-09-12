@@ -189,5 +189,11 @@ namespace MASI_MarcoLegal.Server.Controllers
             }
             return Ok();
         }
+
+        [HttpGet("GetVerificaciones")]
+        public async Task<IEnumerable<Verificacion>> GetVerificaciones()
+        {
+            return await _marcoLegalService.GetVerificacionesAsync();
+        }
     }
 }

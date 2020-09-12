@@ -17,6 +17,9 @@ namespace MASI_MarcoLegal.Server.Middlerware
             // Inyectar el servicio de Organizaciones
             services.AddTransient<IOrganizacionesService, OrganizacionesService>();
 
+            //Inyecta los servicio de Resultado
+            services.AddTransient<IResultadosServices, ResultadosServices>();
+
             return services;
         }
     }
