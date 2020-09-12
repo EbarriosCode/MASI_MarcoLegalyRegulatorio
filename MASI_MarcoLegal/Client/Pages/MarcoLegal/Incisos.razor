@@ -1,6 +1,6 @@
 ﻿@page "/Incisos"
 @inject HttpClient httpClient
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Administrador,Supervisor")]
 
 @if (IncisosAPI == null)
 {
@@ -11,6 +11,11 @@ else
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Incisos</h5>
+            <AuthorizeView Roles="Administrador,Supervisor">
+                <div class="form-group">
+                    <button type="button" class="btn btn-light px-5" @onclick="ShowingForm"><i class="zmdi zmdi-file-add"></i> Agregar</button>
+                </div>
+            </AuthorizeView>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -38,10 +43,22 @@ else
             </div>
         </div>
     </div>
+    <h5 class="@textClass">@MessageCreate</h5>
+
+    @if (this.ShowForm)
+    {
+        <IncisosForm ButtonText="Crear Inciso" Inciso="Inciso" OnValidSubmit="CreateInciso" Title="Crear Inciso" />
+    }
 }
 
 @code {
+    private IncisoViewModel Inciso = new IncisoViewModel();
     private List<IncisoViewModel> IncisosAPI { get; set; }
+    private bool ShowForm;
+    private string MessageCreate;
+    private string textClass;
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,6 +68,36 @@ else
     private async Task GetIncisosAsync()
     {
         this.IncisosAPI = await httpClient.GetFromJsonAsync<List<IncisoViewModel>>("api/MarcoLegal/GetIncisos");
+    }
+
+    private void ShowingForm()
+    {
+        this.ShowForm = true;
+    }
+
+    private async Task CreateInciso()
+    {
+        var result = await httpClient.PostAsJsonAsync("api/MarcoLegal/CreateInciso", this.Inciso);
+
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            //var content = result.Content.ReadFromJsonAsync<UserToken>();
+            this.textClass = "text-center text-success";
+            this.MessageCreate = "Registro creado con éxito";
+            this.ShowForm = false;
+
+            await OnInitializedAsync();
+
+            this.Inciso.Descripcion = string.Empty;
+            this.Inciso.Detalle = string.Empty;
+            this.Inciso.ArticuloID = 0;
+            this.Inciso.Verificable = false;
+        }
+        else
+        {
+            this.textClass = "text-center text-warning";
+            this.MessageCreate = "Error al crear registro";
+        }
     }
 }
 

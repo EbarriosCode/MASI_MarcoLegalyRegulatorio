@@ -1,6 +1,6 @@
 ﻿@page "/Leyes"
 @inject HttpClient httpClient
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Administrador,Supervisor,Empresa")]
 
 @if (LeyesAPI == null)
 {
@@ -10,7 +10,13 @@ else
 {
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Marcos Legales</h5>
+            <h4 class="card-title">Marcos Legales</h4>
+
+            <AuthorizeView Roles="Administrador,Supervisor">
+                <div class="form-group">
+                    <button type="button" class="btn btn-light px-5" @onclick="ShowingForm"><i class="zmdi zmdi-file-add"></i> Agregar</button>
+                </div>
+            </AuthorizeView>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -32,10 +38,21 @@ else
             </div>
         </div>
     </div>
+    <h5 class="@textClass">@MessageCreate</h5>
+    @if (this.ShowForm)
+    {
+        <LeyesForm ButtonText="Crear Ley" Ley="this.Ley" OnValidSubmit="CreateLey" Title="Crear Marco Legal" />
+
+    }
 }
 
-@code {
+@code
+{
+    private LeyesViewModel Ley = new LeyesViewModel();
     private List<LeyesViewModel> LeyesAPI { get; set; }
+    private bool ShowForm;
+    private string MessageCreate;
+    private string textClass;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,5 +62,30 @@ else
     private async Task GetLeyesAsync()
     {
         LeyesAPI = await httpClient.GetFromJsonAsync<List<LeyesViewModel>>("api/MarcoLegal/GetLeyes");
+    }
+
+    private void ShowingForm()
+    {
+        this.ShowForm = true;
+    }
+
+    private async Task CreateLey()
+    {
+        var result = await httpClient.PostAsJsonAsync("api/MarcoLegal/CreateLey", this.Ley);
+
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            //var content = result.Content.ReadFromJsonAsync<UserToken>();
+            this.textClass = "text-center text-success";
+            this.MessageCreate = "Registro creado con éxito";
+            this.ShowForm = false;
+
+            await OnInitializedAsync();
+        }
+        else
+        {
+            this.textClass = "text-center text-warning";
+            this.MessageCreate = "Error al crear registro";
+        }
     }
 }

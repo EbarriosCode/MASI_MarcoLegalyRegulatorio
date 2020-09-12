@@ -57,4 +57,4 @@ update Incisos set Verificable = 1 where ArticuloID = 9
 
 
 
-SELECT * FROM Verificacion
+SELECT * FROM Titulos

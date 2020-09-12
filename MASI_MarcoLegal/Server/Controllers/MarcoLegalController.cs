@@ -23,7 +23,7 @@ namespace MASI_MarcoLegal.Server.Controllers
         public async Task<IEnumerable<LeyOrganizacion>> GetLeyesOrganizacionesAsync()
         {
             return await this._marcoLegalService.GetLeyesOrganizacionesAsync();
-        }
+        }        
 
         [HttpGet("GetOrganizaciones")]
         public async Task<IEnumerable<Organizacion>> GetOrganizacionesAsync()
@@ -37,10 +37,34 @@ namespace MASI_MarcoLegal.Server.Controllers
             return await this._marcoLegalService.GetLeyesAsync();
         }
 
+        [HttpPost("CreateLey")]
+        public async Task<IActionResult> CreateLey([FromBody] LeyesViewModel model)
+        {
+            if (model != null)
+            {
+                await this._marcoLegalService.CreateLeyAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         [HttpGet("GetTitulos")]
         public async Task<IEnumerable<Titulos>> GetTitulosAsync()
         {
             return await this._marcoLegalService.GetTitulosAsync();
+        }
+
+        [HttpPost("CreateTitulo")]
+        public async Task<IActionResult> CreateTitulo([FromBody] TituloViewModel model)
+        {
+            if (model != null)
+            {
+                await this._marcoLegalService.CreateTituloAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         [HttpGet("GetCapitulos")]
@@ -49,16 +73,64 @@ namespace MASI_MarcoLegal.Server.Controllers
             return await this._marcoLegalService.GetCapitulosAsync();
         }
 
+        [HttpPost("CreateCapitulo")]
+        public async Task<IActionResult> CreateCapitulo([FromBody] CapituloViewModel model)
+        {
+            if (model != null)
+            {
+                await this._marcoLegalService.CreateCapituloAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         [HttpGet("GetArticulos")]
         public async Task<IEnumerable<Articulos>> GetArticulosAsync()
         {
             return await this._marcoLegalService.GetArticulosAsync();
         }
 
+        [HttpPost("CreateArticulo")]
+        public async Task<IActionResult> CreateArticulo([FromBody] ArticuloViewModel model)
+        {
+            if (model != null)
+            {
+                await this._marcoLegalService.CreateArticuloAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         [HttpGet("GetIncisos")]
         public async Task<IEnumerable<Incisos>> GetIncisosAsync()
         {
             return await this._marcoLegalService.GetIncisosAsync();
+        }
+
+        [HttpPost("CreateInciso")]
+        public async Task<IActionResult> CreateInciso([FromBody] IncisoViewModel model)
+        {
+            if (model != null)
+            {
+                await this._marcoLegalService.CreateIncisoAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPost("CreateSubInciso")]
+        public async Task<IActionResult> CreateSubInciso([FromBody] SubIncisoViewModel model)
+        {
+            if (model != null)
+            {                
+                await this._marcoLegalService.CreateSubIncisoAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         [HttpGet("GetSubIncisos")]

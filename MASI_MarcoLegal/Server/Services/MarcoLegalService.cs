@@ -21,6 +21,12 @@ namespace MASI_MarcoLegal.Server.Services
         Task<IEnumerable<SubIncisos>> GetSubIncisosAsync();
         Task<ItemsVerificablesViewModel> GetItemsVerificablesAsync(int LeyID);
         Task<bool> CreateVerificacionAsync(ItemsVerificablesViewModel model);
+        Task<bool> CreateLeyAsync(LeyesViewModel model);
+        Task<bool> CreateTituloAsync(TituloViewModel model);
+        Task<bool> CreateCapituloAsync(CapituloViewModel model);
+        Task<bool> CreateArticuloAsync(ArticuloViewModel model);
+        Task<bool> CreateIncisoAsync(IncisoViewModel model);
+        Task<bool> CreateSubIncisoAsync(SubIncisoViewModel model);
     }
     public class MarcoLegalService : IMarcolegalService
     {
@@ -211,7 +217,7 @@ namespace MASI_MarcoLegal.Server.Services
                     Verificable = a.Verificable
                 }).ToListAsync();
 
-                var incisos = await this._context.Incisos.Where(i => i.Verificable == true).Select(i => new IncisoViewModel {
+                var incisos = await this._context.Incisos.Where(i => i.Verificable == true && i.Articulo.Capitulo.Titulo.LeyID == LeyID).Select(i => new IncisoViewModel {
                     IncisoID = i.IncisoID,
                     Descripcion = i.Descripcion,
                     Detalle = i.Detalle,
@@ -219,7 +225,7 @@ namespace MASI_MarcoLegal.Server.Services
                     Verificable = i.Verificable
                 }).ToListAsync();
 
-                var subIncisos = await this._context.SubIncisos.Where(s => s.Verificable == true).Select(s => new SubIncisoViewModel
+                var subIncisos = await this._context.SubIncisos.Where(s => s.Verificable == true && s.Inciso.Articulo.Capitulo.Titulo.LeyID == LeyID).Select(s => new SubIncisoViewModel
                 {
                     SubIncisoID = s.SubIncisoID,
                     Descripcion = s.Descripcion,
@@ -313,5 +319,149 @@ namespace MASI_MarcoLegal.Server.Services
 
             return created;
         }
-    }
+
+        public async Task<bool> CreateLeyAsync(LeyesViewModel model)
+        {
+            bool created;
+            try
+            {
+                var ley = new Leyes()
+                {
+                    Descripcion = model.Descripcion
+                };
+
+                _context.Leyes.Add(ley);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return created;
+        }
+        public async Task<bool> CreateTituloAsync(TituloViewModel model)
+        {
+            bool created;
+            try
+            {
+                var titulo = new Titulos()
+                {
+                    Descripcion = model.Descripcion,
+                    Detalle = model.Detalle,
+                    LeyID = model.LeyID
+                };
+
+                _context.Titulos.Add(titulo);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return created;
+        }
+
+        public async Task<bool> CreateCapituloAsync(CapituloViewModel model)
+        {
+            bool created;
+            try
+            {
+                var capitulo = new Capitulos()
+                {
+                    Descripcion = model.Descripcion,
+                    Detalle = model.Detalle,
+                    TituloID = model.TituloID
+                };
+
+                _context.Capitulos.Add(capitulo);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return created;
+        }
+
+        public async Task<bool> CreateArticuloAsync(ArticuloViewModel model)
+        {
+            bool created;
+            try
+            {
+                var articulo = new Articulos()
+                {
+                    Descripcion = model.Descripcion,
+                    Detalle = model.Detalle,
+                    CapituloID = model.CapituloID,
+                    Verificable = model.Verificable
+                };
+
+                _context.Articulos.Add(articulo);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return created;
+        }
+
+        public async Task<bool> CreateIncisoAsync(IncisoViewModel model)
+        {
+            bool created;
+            try
+            {
+                var inciso = new Incisos()
+                {
+                    Descripcion = model.Descripcion,
+                    Detalle = model.Detalle,
+                    ArticuloID = model.ArticuloID,
+                    Verificable = model.Verificable
+                };
+
+                _context.Incisos.Add(inciso);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return created;
+        }
+
+        public async Task<bool> CreateSubIncisoAsync(SubIncisoViewModel model)
+        {
+            bool created;
+            try
+            {
+                var subinciso = new SubIncisos()
+                {
+                    Descripcion = model.Descripcion,
+                    Detalle = model.Detalle,
+                    IncisoID = model.IncisoID,
+                    Verificable = true
+                };
+
+                _context.SubIncisos.Add(subinciso);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return created;
+        }
+    }    
 }

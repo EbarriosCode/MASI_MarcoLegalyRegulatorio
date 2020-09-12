@@ -1,6 +1,6 @@
 ﻿@page "/Articulos"
 @inject HttpClient httpClient
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Administrador,Supervisor")]
 
 @if (ArticulosAPI == null)
 {
@@ -11,6 +11,11 @@ else
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Artículos</h5>
+            <AuthorizeView Roles="Administrador,Supervisor">
+                <div class="form-group">
+                    <button type="button" class="btn btn-light px-5" @onclick="ShowingForm"><i class="zmdi zmdi-file-add"></i> Agregar</button>
+                </div>
+            </AuthorizeView>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -38,10 +43,21 @@ else
             </div>
         </div>
     </div>
+    <h5 class="@textClass">@MessageCreate</h5>
+
+    @if (this.ShowForm)
+    {
+        <ArticulosForm ButtonText="Crear Artículo" Articulo="Articulo" OnValidSubmit="CreateArticulo" Title="Crear Artículo" />
+    }
 }
 
 @code {
+    private ArticuloViewModel Articulo = new ArticuloViewModel();
     private List<ArticuloViewModel> ArticulosAPI { get; set; }
+    private bool ShowForm;
+    private string MessageCreate;
+    private string textClass;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,6 +66,36 @@ else
 
     private async Task GetArticulosAsync()
     {
-        this.ArticulosAPI = await httpClient.GetFromJsonAsync<List<ArticuloViewModel>>("api/MarcoLegal/GetArticulos");        
+        this.ArticulosAPI = await httpClient.GetFromJsonAsync<List<ArticuloViewModel>>("api/MarcoLegal/GetArticulos");
+    }
+
+    private void ShowingForm()
+    {
+        this.ShowForm = true;
+    }
+
+    private async Task CreateArticulo()
+    {
+        var result = await httpClient.PostAsJsonAsync("api/MarcoLegal/CreateArticulo", this.Articulo);
+
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            //var content = result.Content.ReadFromJsonAsync<UserToken>();
+            this.textClass = "text-center text-success";
+            this.MessageCreate = "Registro creado con éxito";
+            this.ShowForm = false;
+
+            await OnInitializedAsync();
+
+            this.Articulo.Descripcion = string.Empty;
+            this.Articulo.Detalle = string.Empty;
+            this.Articulo.CapituloID = 0;
+            this.Articulo.Verificable = false;
+        }
+        else
+        {
+            this.textClass = "text-center text-warning";
+            this.MessageCreate = "Error al crear registro";
+        }
     }
 }

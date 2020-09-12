@@ -13,38 +13,39 @@
         </NavLink>
     </li>
 
-    <li>
-        <NavLink href="Recientes">
-            <i class="zmdi zmdi-calendar-check"></i> <span>Recientes</span>
-        </NavLink>
-    </li>
+    <AuthorizeView Roles="Administrador,Supervisor">
+        <li>
+            <NavLink href="Recientes">
+                <i class="zmdi zmdi-calendar-check"></i> <span>Recientes</span>
+            </NavLink>
+        </li>
 
-    <li>
-        <NavLink href="Leyes">
-            <i class="zmdi zmdi-badge-check"></i> <span>Marcos Legales</span>
-        </NavLink>
-    </li>
+        <li>
+            <NavLink href="Leyes">
+                <i class="zmdi zmdi-badge-check"></i> <span>Marcos Legales</span>
+            </NavLink>
+        </li>
 
-    <li>
-        <NavLink href="Organizaciones">
-            <i class="zmdi zmdi-group-work"></i> <span>Organizaciones</span>
-        </NavLink>
-    </li>
+        <li>
+            <NavLink href="Organizaciones">
+                <i class="zmdi zmdi-group-work"></i> <span>Organizaciones</span>
+            </NavLink>
+        </li>
 
-    <li>
-        <NavLink href="Validacion">
-            <i class="zmdi zmdi-check-all"></i> <span>Nueva Verificación</span>
-            <small class="badge float-right badge-light">Nuevo</small>
-        </NavLink>
-    </li>
-
+        <li>
+            <NavLink href="Validacion">
+                <i class="zmdi zmdi-check-all"></i> <span>Nueva Verificación</span>
+                <small class="badge float-right badge-light">Nuevo</small>
+            </NavLink>
+        </li>
+    </AuthorizeView>
     <li>
         <NavLink href="Resultados">
             <i class="zmdi zmdi-chart"></i> <span>Resultados</span>
         </NavLink>
     </li>
 
-    <AuthorizeView Roles="Admin">
+    <AuthorizeView Roles="Administrador,Supervisor">
         <li class="sidebar-header">CATÁLOGOS</li>
         <li>
             <NavLink href="Titulos">

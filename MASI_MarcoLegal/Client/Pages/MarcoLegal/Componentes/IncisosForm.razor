@@ -1,0 +1,68 @@
+﻿@inject HttpClient httpClient
+
+<div class="cardcard-authentication1 mx-auto my-5">
+    <div class="card-body">
+        <div class="card-content p-2">
+            <div class="card-title text-uppercase text-center py-3">@Title</div>
+            <hr />
+            <EditForm Model="@Inciso" OnValidSubmit="@OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Inciso.Descripcion" Class="form-control input-shadow" placeholder="Descripción" />
+                        <ValidationMessage For="@(() => Inciso.Descripcion)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Inciso.Detalle" Class="form-control input-shadow" placeholder="Detalle" />
+                        <ValidationMessage For="@(() => Inciso.Detalle)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-2">Artículo</label>
+                    <InputSelectNumber class="form-control"
+                                       @bind-Value="Inciso.ArticuloID">
+                        <option value="0">-- Selecciona Articulo --</option>
+                        @if (ArticulosAPI != null)
+                        {
+
+                            @foreach (var item in ArticulosAPI)
+                            {
+                                <option value="@item.ArticuloID">@item.Descripcion</option>
+                            }
+
+                        }
+                    </InputSelectNumber>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check-inline">
+                        <label class="form-check-label" style="margin-right:10px;">Verificable</label>
+                        <InputCheckbox @bind-Value="Inciso.Verificable" class="form-check-input"></InputCheckbox>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-light btn-block"> @ButtonText</button>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public IncisoViewModel Inciso { get; set; }
+    [Parameter] public string Title { get; set; } = "Crear Capítulo";
+    [Parameter] public string ButtonText { get; set; } = "Crear";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+    private List<ArticuloViewModel> ArticulosAPI { set; get; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.ArticulosAPI = await httpClient.GetFromJsonAsync<List<ArticuloViewModel>>("api/MarcoLegal/GetArticulos");
+    }
+}

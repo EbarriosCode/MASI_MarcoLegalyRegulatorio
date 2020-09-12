@@ -1,6 +1,6 @@
 ﻿@page "/Titulos"
 @inject HttpClient httpClient
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Administrador,Supervisor")]
 
 @if (TitulosAPI == null)
 {
@@ -11,6 +11,13 @@ else
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Títulos</h5>
+
+            <AuthorizeView Roles="Administrador,Supervisor">
+                <div class="form-group">
+                    <button type="button" class="btn btn-light px-5" @onclick="ShowingForm"><i class="zmdi zmdi-file-add"></i> Agregar</button>
+                </div>
+            </AuthorizeView>
+
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -24,22 +31,33 @@ else
                     <tbody>
                         @foreach (var item in TitulosAPI)
                         {
-                        <tr>
-                            <td scope="row">@item.TituloID</td>
-                            <td>@item.Descripcion</td>
-                            <td>@item.Detalle</td>
-                            <td>@item.Ley.Descripcion</td>
-                        </tr>
+                            <tr>
+                                <td scope="row">@item.TituloID</td>
+                                <td>@item.Descripcion</td>
+                                <td>@item.Detalle</td>
+                                <td>@item.Ley.Descripcion</td>
+                            </tr>
                         }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    <h5 class="@textClass">@MessageCreate</h5>
+
+    @if (this.ShowForm)
+    {
+        <TitulosForm ButtonText="Crear Título" Titulo="this.Titulo" OnValidSubmit="CreateTitulo" Title="Crear Título" />
+
+    }
 }
 
 @code {
+    private TituloViewModel Titulo = new TituloViewModel();
     private List<TituloViewModel> TitulosAPI { get; set; }
+    private bool ShowForm;
+    private string MessageCreate;
+    private string textClass;
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,5 +67,30 @@ else
     private async Task GetTitulosAsync()
     {
         this.TitulosAPI = await httpClient.GetFromJsonAsync<List<TituloViewModel>>("api/MarcoLegal/GetTitulos");
+    }
+    
+    private void ShowingForm()
+    {
+        this.ShowForm = true;
+    }
+
+    private async Task CreateTitulo()
+    {
+        var result = await httpClient.PostAsJsonAsync("api/MarcoLegal/CreateTitulo", this.Titulo);
+
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            //var content = result.Content.ReadFromJsonAsync<UserToken>();
+            this.textClass = "text-center text-success";
+            this.MessageCreate = "Registro creado con éxito";
+            this.ShowForm = false;
+
+            await OnInitializedAsync();
+        }
+        else
+        {
+            this.textClass = "text-center text-warning";
+            this.MessageCreate = "Error al crear registro";
+        }
     }
 }

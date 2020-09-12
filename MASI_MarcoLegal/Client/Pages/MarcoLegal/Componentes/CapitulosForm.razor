@@ -1,0 +1,61 @@
+﻿@inject HttpClient httpClient
+
+<div class="cardcard-authentication1 mx-auto my-5">
+    <div class="card-body">
+        <div class="card-content p-2">
+            <div class="card-title text-uppercase text-center py-3">@Title</div>
+            <hr />
+            <EditForm Model="@Capitulo" OnValidSubmit="@OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Capitulo.Descripcion" Class="form-control input-shadow" placeholder="Descripción" />
+                        <ValidationMessage For="@(() => Capitulo.Descripcion)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Capitulo.Detalle" Class="form-control input-shadow" placeholder="Detalle" />
+                        <ValidationMessage For="@(() => Capitulo.Detalle)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-2">Títulos</label>
+                    <InputSelectNumber class="form-control"
+                                       @bind-Value="Capitulo.TituloID">
+                        <option value="0">-- Selecciona Título</option>
+                        @if (TitulosAPI != null)
+                        {
+
+                            @foreach (var item in TitulosAPI)
+                            {
+                                <option value="@item.TituloID">@item.Descripcion</option>
+                            }
+
+                        }
+                    </InputSelectNumber>
+                </div>
+                <button type="submit" class="btn btn-light btn-block"> @ButtonText</button>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public CapituloViewModel Capitulo { get; set; }
+    [Parameter] public string Title { get; set; } = "Crear Capítulo";
+    [Parameter] public string ButtonText { get; set; } = "Crear";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+    private List<TituloViewModel> TitulosAPI { set; get; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.TitulosAPI = await httpClient.GetFromJsonAsync<List<TituloViewModel>>("api/MarcoLegal/GetTitulos");
+    }
+}

@@ -1,0 +1,68 @@
+﻿@inject HttpClient httpClient
+
+<div class="cardcard-authentication1 mx-auto my-5">
+    <div class="card-body">
+        <div class="card-content p-2">
+            <div class="card-title text-uppercase text-center py-3">@Title</div>
+            <hr />
+            <EditForm Model="@Articulo" OnValidSubmit="@OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Articulo.Descripcion" Class="form-control input-shadow" placeholder="Descripción" />
+                        <ValidationMessage For="@(() => Articulo.Descripcion)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Articulo.Detalle" Class="form-control input-shadow" placeholder="Detalle" />
+                        <ValidationMessage For="@(() => Articulo.Detalle)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-2">Capítulo</label>
+                    <InputSelectNumber class="form-control"
+                                       @bind-Value="Articulo.CapituloID">
+                        <option value="0">-- Selecciona Capítulo --</option>
+                        @if (CapitulosAPI != null)
+                        {
+
+                            @foreach (var item in CapitulosAPI)
+                            {
+                                <option value="@item.CapituloID">@item.Descripcion</option>
+                            }
+
+                        }
+                    </InputSelectNumber>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check-inline">
+                        <label class="form-check-label" style="margin-right:10px;">Verificable</label>
+                        <InputCheckbox @bind-Value="Articulo.Verificable" class="form-check-input"></InputCheckbox>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-light btn-block"> @ButtonText</button>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public ArticuloViewModel Articulo { get; set; }
+    [Parameter] public string Title { get; set; } = "Crear Capítulo";
+    [Parameter] public string ButtonText { get; set; } = "Crear";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+    private List<CapituloViewModel> CapitulosAPI { set; get; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.CapitulosAPI = await httpClient.GetFromJsonAsync<List<CapituloViewModel>>("api/MarcoLegal/GetCapitulos");
+    }
+}

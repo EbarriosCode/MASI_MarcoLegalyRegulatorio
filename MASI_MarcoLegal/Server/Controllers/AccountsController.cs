@@ -37,8 +37,15 @@ namespace MASI_MarcoLegal.Server.Controllers
             if (result.Succeeded)
             {
                 // Add all new users to the User role
-                //await _userManager.AddToRoleAsync(user, "Empresa");
-                //await _userManager.AddToRoleAsync(user, "Supervisor");
+                if (user.Email.Contains("empresa"))
+                {
+                    await _userManager.AddToRoleAsync(user, "Empresa");
+                }
+
+                if (user.Email.Contains("supervisor"))
+                {
+                    await _userManager.AddToRoleAsync(user, "Supervisor");
+                }                
 
                 // Add new users whose email starts with 'admin' to the Admin role
                 if (user.Email.StartsWith("admin"))
