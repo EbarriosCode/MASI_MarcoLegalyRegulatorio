@@ -35,7 +35,7 @@ else
 }
 
 @code {
-    private List<LeyOrganizacionViewModel> LeyOrganizacionesAPI { get; set; }
+    private List<VerificacionViewModel> LeyOrganizacionesAPI { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +44,6 @@ else
 
     private async Task GetLeyOrganizacionesAsync()
     {
-        LeyOrganizacionesAPI = await httpClient.GetFromJsonAsync<List<LeyOrganizacionViewModel>>("api/MarcoLegal/GetLeyesOrganizaciones");
+        LeyOrganizacionesAPI = await httpClient.GetFromJsonAsync<List<VerificacionViewModel>>("api/MarcoLegal/GetLeyesOrganizaciones");
     }
 }

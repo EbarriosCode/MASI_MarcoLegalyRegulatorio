@@ -31,7 +31,7 @@ namespace MASI_MarcoLegal.Server.Services
             {
                 DetalleArticulos = await this._context.CumplimientosArticulos.Include(a => a.Articulo).Where(c => c.VerificacionID == IdVerificacion).Select(c => new DetalleResultadoViewModel()
                 {
-                    Descripcion = c.Articulo.Descripcion,
+                    Descripcion = $"{c.Articulo.Descripcion} {c.Articulo.Detalle}",
                     Cumple = c.Cumple
                 }).ToListAsync();
 
@@ -40,8 +40,6 @@ namespace MASI_MarcoLegal.Server.Services
             {
                 throw;
             }
-
-
 
             return DetalleArticulos;
         }
@@ -53,7 +51,7 @@ namespace MASI_MarcoLegal.Server.Services
             {
                 DetalleArticulos = await this._context.CumplimientosIncisos.Include(a => a.Inciso).Where(c => c.VerificacionID == IdVerificacion).Select(c => new DetalleResultadoViewModel()
                 {
-                    Descripcion = c.Inciso.Descripcion,
+                    Descripcion = $"{c.Inciso.Descripcion} {c.Inciso.Detalle}",
                     Cumple = c.Cumple
                 }).ToListAsync();
 
@@ -73,7 +71,7 @@ namespace MASI_MarcoLegal.Server.Services
             {
                 DetalleArticulos = await this._context.CumplimientosSubIncisos.Include(a => a.SubInciso).Where(c => c.VerificacionID == IdVerificacion).Select(c => new DetalleResultadoViewModel()
                 {
-                    Descripcion = c.SubInciso.Descripcion,
+                    Descripcion = $"{c.SubInciso.Descripcion} {c.SubInciso.Detalle}",
                     Cumple = c.Cumple
                 }).ToListAsync();
 
@@ -121,27 +119,60 @@ namespace MASI_MarcoLegal.Server.Services
                 Decimal TotalVerificableLey = articulosVerificables + incisosVerificables + subIncisosVerificables;
 
                 Decimal cantidadArticulosCumplen = await this._context.CumplimientosArticulos.Where(ca => ca.Cumple == true && ca.Verificacion.LeyID == Verificacion.LeyID && ca.VerificacionID == Verificacion.VerificacionID).CountAsync();
-                // cantidadArticulosNoCumplen = await this._context.CumplimientosArticulos.Where(ca => ca.Cumple == false && ca.Verificacion.LeyID == Verificacion.LeyID && ca.VerificacionID == Verificacion.VerificacionID).CountAsync();
 
                 Decimal cantidadIncisosCumplen = await this._context.CumplimientosIncisos.Where(ci => ci.Cumple == true && ci.Verificacion.LeyID == Verificacion.LeyID && ci.VerificacionID == Verificacion.VerificacionID).CountAsync();
-               // Decimal cantidadIncisosNoCumplen = await this._context.CumplimientosIncisos.Where(ci => ci.Cumple == false && ci.Verificacion.LeyID == Verificacion.LeyID && ci.VerificacionID == Verificacion.VerificacionID).CountAsync();
 
                 Decimal cantidadSubIncisosCumplen = await this._context.CumplimientosSubIncisos.Where(cs => cs.Cumple == true && cs.Verificacion.LeyID == Verificacion.LeyID && cs.VerificacionID == Verificacion.VerificacionID).CountAsync();
-                //Decimal cantidadSubIncisosNoCumplen = await this._context.CumplimientosSubIncisos.Where(cs => cs.Cumple == false && cs.Verificacion.LeyID == Verificacion.LeyID && cs.VerificacionID == Verificacion.VerificacionID).CountAsync();
 
                 //Calculo de resultados
-                Decimal porcentajeCumplimientoArticulo = (cantidadArticulosCumplen / articulosVerificables)*100m;
-                Decimal porcentaJeNoCumplientoArticulos = 100m - porcentajeCumplimientoArticulo;
 
-                Decimal porcentajeCumplimientoInciso = (cantidadIncisosCumplen / incisosVerificables) * 100m;
-                Decimal porcentajeNoCumplimientoInciso = 100 - porcentajeCumplimientoInciso;
+                Decimal porcentajeCumplimientoArticulo = 0;
+                Decimal porcentaJeNoCumplientoArticulos = 0;
 
-                Decimal porcentajeCumplimientoSubInciso = cantidadSubIncisosCumplen / subIncisosVerificables * 100;
-                Decimal porcentajeNoCumplimientoSubInciso = 100 - porcentajeCumplimientoSubInciso;
+                Decimal porcentajeCumplimientoInciso = 0;
+                Decimal porcentajeNoCumplimientoInciso = 0;
 
-                Decimal porcentajeCumplimientoTotal = (cantidadArticulosCumplen + cantidadIncisosCumplen + cantidadSubIncisosCumplen) / TotalVerificableLey * 100;
-                Decimal porcentajeNoCumplimientoTotal = 100 - porcentajeCumplimientoTotal;
+                Decimal porcentajeCumplimientoSubInciso = 0;
+                Decimal porcentajeNoCumplimientoSubInciso = 0;
 
+                Decimal porcentajeCumplimientoTotal = 0;
+                Decimal porcentajeNoCumplimientoTotal = 0;
+
+
+                if (TotalVerificableLey > 0)
+                {
+
+                    if (articulosVerificables > 0)
+                    {
+
+                        porcentajeCumplimientoArticulo = (cantidadArticulosCumplen / articulosVerificables) * 100m;
+                        porcentaJeNoCumplientoArticulos = 100m - porcentajeCumplimientoArticulo;
+                    }
+
+
+
+                    if (incisosVerificables > 0)
+                    {
+                        porcentajeCumplimientoInciso = (cantidadIncisosCumplen / incisosVerificables) * 100m;
+                        porcentajeNoCumplimientoInciso = 100 - porcentajeCumplimientoInciso;
+                    }
+
+
+
+                    if (subIncisosVerificables > 0)
+                    {
+                        porcentajeCumplimientoSubInciso = cantidadSubIncisosCumplen / subIncisosVerificables * 100;
+                        porcentajeNoCumplimientoSubInciso = 100 - porcentajeCumplimientoSubInciso;
+                    }
+
+
+
+                    if (articulosVerificables > 0)
+                    {
+                        porcentajeCumplimientoTotal = (cantidadArticulosCumplen + cantidadIncisosCumplen + cantidadSubIncisosCumplen) / TotalVerificableLey * 100;
+                        porcentajeNoCumplimientoTotal = 100 - porcentajeCumplimientoTotal;
+                    }
+                }
                 viewResultados = new ResultadosViewModel
                 {
                     Verificacion = VerificacionViewModel,
@@ -167,6 +198,5 @@ namespace MASI_MarcoLegal.Server.Services
 
             return viewResultados;
         }
-
     }
 }

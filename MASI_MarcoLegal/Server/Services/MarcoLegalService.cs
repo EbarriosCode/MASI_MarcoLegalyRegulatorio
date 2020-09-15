@@ -11,16 +11,19 @@ namespace MASI_MarcoLegal.Server.Services
 {
     public interface IMarcolegalService
     {
-        Task<IEnumerable<LeyOrganizacion>> GetLeyesOrganizacionesAsync();
+        Task<IEnumerable<Verificacion>> GetLeyesOrganizacionesAsync();
         Task<IEnumerable<Organizacion>> GetOrganizacionesAsync();
         Task<IEnumerable<Leyes>> GetLeyesAsync();
         Task<IEnumerable<Titulos>> GetTitulosAsync();
         Task<IEnumerable<Capitulos>> GetCapitulosAsync();
         Task<IEnumerable<Articulos>> GetArticulosAsync();
+        Task<IEnumerable<Articulos>> GetArticulosNoVerificablesAsync();
         Task<IEnumerable<Incisos>> GetIncisosAsync();
+        Task<IEnumerable<Incisos>> GetIncisosNoVerificablesAsync();
         Task<IEnumerable<SubIncisos>> GetSubIncisosAsync();
         Task<ItemsVerificablesViewModel> GetItemsVerificablesAsync(int LeyID);
         Task<bool> CreateVerificacionAsync(ItemsVerificablesViewModel model);
+        Task<bool> CreateOrganizacionAsync(OrganizacionViewModel model);
         Task<bool> CreateLeyAsync(LeyesViewModel model);
         Task<bool> CreateTituloAsync(TituloViewModel model);
         Task<bool> CreateCapituloAsync(CapituloViewModel model);
@@ -35,25 +38,23 @@ namespace MASI_MarcoLegal.Server.Services
 
         public MarcoLegalService(MASIContext context) => this._context = context;
 
-        public async Task<IEnumerable<LeyOrganizacion>> GetLeyesOrganizacionesAsync()
+        public async Task<IEnumerable<Verificacion>> GetLeyesOrganizacionesAsync()
         {
-            var leyes = new List<LeyOrganizacion>();
+            var ultimosResultados = new List<Verificacion>();
 
             try
             {
-                //leyes = await this._context
-                //                        .LeyesOrganizaciones
-                //                        .Include(lo => lo.Ley)
-                //                        .Include(lo => lo.Organizacion)
-                //                        .ToListAsync();
-
+                ultimosResultados = await this._context.Verificaciones
+                                                        .Include(v => v.Ley)
+                                                        .Include(v => v.Organizacion)
+                                                        .ToListAsync();
             }
             catch (Exception)
             {
                 throw;
             }
 
-            return leyes;
+            return ultimosResultados;
         }
 
         public async Task<IEnumerable<Organizacion>> GetOrganizacionesAsync()
@@ -151,6 +152,32 @@ namespace MASI_MarcoLegal.Server.Services
                 articulos = await this._context
                                         .Articulos
                                         .Include(a => a.Capitulo)
+                                            .ThenInclude(c => c.Titulo)
+                                                .ThenInclude(l => l.Ley)
+                                        .OrderBy(a => a.ArticuloID)
+                                        .ToListAsync();
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return articulos;
+        }
+
+        public async Task<IEnumerable<Articulos>> GetArticulosNoVerificablesAsync()
+        {
+            var articulos = new List<Articulos>();
+
+            try
+            {
+                articulos = await this._context
+                                        .Articulos
+                                        .Include(a => a.Capitulo)
+                                            .ThenInclude(c => c.Titulo)
+                                                .ThenInclude(l => l.Ley)
+                                        .Where(a => a.Verificable == false)
                                         .OrderBy(a => a.ArticuloID)
                                         .ToListAsync();
 
@@ -171,7 +198,35 @@ namespace MASI_MarcoLegal.Server.Services
             {
                 incisos = await this._context
                                         .Incisos
+                                        .Include(i => i.Articulo)                                            
+                                            .ThenInclude(a => a.Capitulo)
+                                                .ThenInclude(c => c.Titulo)
+                                                    .ThenInclude(l => l.Ley)
+                                        .OrderBy(a => a.IncisoID)
+                                        .ToListAsync();
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return incisos;
+        }
+
+        public async Task<IEnumerable<Incisos>> GetIncisosNoVerificablesAsync()
+        {
+            var incisos = new List<Incisos>();
+
+            try
+            {
+                incisos = await this._context
+                                        .Incisos
                                         .Include(i => i.Articulo)
+                                            .ThenInclude(a => a.Capitulo)
+                                                .ThenInclude(c => c.Titulo)
+                                                    .ThenInclude(l => l.Ley)
+                                        .Where(i => i.Verificable == false)
                                         .OrderBy(a => a.IncisoID)
                                         .ToListAsync();
 
@@ -318,6 +373,28 @@ namespace MASI_MarcoLegal.Server.Services
                 throw;
             }
 
+            return created;
+        }
+
+        public async Task<bool> CreateOrganizacionAsync(OrganizacionViewModel model)
+        {
+            bool created;
+            try
+            {
+                var organizacion = new Organizacion()
+                {
+                    Nombre = model.Nombre
+                };
+
+                _context.Organizaciones.Add(organizacion);
+                await _context.SaveChangesAsync();
+
+                created = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             return created;
         }
 

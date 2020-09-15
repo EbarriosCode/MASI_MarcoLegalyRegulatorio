@@ -33,7 +33,7 @@
 
                             @foreach (var item in IncisosAPI)
                             {
-                                <option value="@item.IncisoID">@item.Descripcion</option>
+                                <option value="@item.IncisoID">@item.Descripcion @item.Detalle - Artículo: @item.Articulo.Descripcion - Capítulo: @item.Articulo.Capitulo.Descripcion - Ley: @item.Articulo.Capitulo.Titulo.Ley.Descripcion</option>
                             }
 
                         }
@@ -64,6 +64,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.IncisosAPI = await httpClient.GetFromJsonAsync<List<IncisoViewModel>>("api/MarcoLegal/GetIncisos");
+        this.IncisosAPI = await httpClient.GetFromJsonAsync<List<IncisoViewModel>>("api/MarcoLegal/GetIncisosNoVerificables");
     }
 }

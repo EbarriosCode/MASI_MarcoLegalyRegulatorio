@@ -67,7 +67,8 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Descripción</th>                                
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Detalle</th>
                                 <th scope="col">Verificación</th>
                                 <th scope="col">Evidencia</th>
                             </tr>
@@ -78,7 +79,8 @@
                                 @foreach (var item in ItemsAPI.Incisos)
                                 {
                                     <tr>
-                                        <td scope="row">@item.Descripcion</td>                                        
+                                        <td scope="row">@item.Descripcion</td>
+                                        <td scope="row">@item.Detalle</td>
                                         <td>
                                             <EditForm Model="item">
                                                 <div class="form-check-inline">
@@ -116,7 +118,8 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Descripción</th>                                
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Detalle</th>
                                 <th scope="col">Verificación</th>
                                 <th scope="col">Evidencia</th>
                             </tr>
@@ -127,7 +130,8 @@
                                 @foreach (var item in ItemsAPI.SubIncisos)
                                 {
                                     <tr>
-                                        <td scope="row">@item.Descripcion</td>                                        
+                                        <td scope="row">@item.Descripcion</td>  
+                                        <td scope="row">@item.Detalle</td>  
                                         <td>
                                             <EditForm Model="item">
                                                 <div class="form-check-inline">

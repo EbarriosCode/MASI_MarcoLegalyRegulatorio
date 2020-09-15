@@ -73,8 +73,8 @@ namespace MASI_MarcoLegal.Server.Controllers
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return BadRequest(ModelState);
+                //ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return BadRequest("Intento de inicio de sesión no válido.");
             }
         }
 

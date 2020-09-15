@@ -8,9 +8,9 @@ namespace MASI_MarcoLegal.Shared.ViewModels
     public class IncisoViewModel
     {
         public int IncisoID { get; set; }
-        [Required(ErrorMessage = "El campo {0} es requerido")]
+        //[Required(ErrorMessage = "El campo {0} es requerido")]
         public string Descripcion { get; set; }
-        [Required(ErrorMessage = "El campo {0} es requerido")]
+        //[Required(ErrorMessage = "El campo {0} es requerido")]
         public string Detalle { get; set; }
         public int ArticuloID { get; set; }
         public ArticuloViewModel Articulo { get; set; }

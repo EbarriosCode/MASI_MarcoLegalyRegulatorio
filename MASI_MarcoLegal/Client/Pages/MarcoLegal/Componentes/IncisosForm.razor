@@ -33,7 +33,7 @@
 
                             @foreach (var item in ArticulosAPI)
                             {
-                                <option value="@item.ArticuloID">@item.Descripcion</option>
+                                <option value="@item.ArticuloID">@item.Descripcion - Capítulo: @item.Capitulo.Descripcion - Título: @item.Capitulo.Titulo.Descripcion - Ley: @item.Capitulo.Titulo.Ley.Descripcion</option>
                             }
 
                         }
@@ -63,6 +63,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.ArticulosAPI = await httpClient.GetFromJsonAsync<List<ArticuloViewModel>>("api/MarcoLegal/GetArticulos");
+        this.ArticulosAPI = await httpClient.GetFromJsonAsync<List<ArticuloViewModel>>("api/MarcoLegal/GetArticulosNoVerificables");
     }
 }

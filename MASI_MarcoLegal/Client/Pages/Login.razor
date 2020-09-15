@@ -21,7 +21,7 @@
                     <label for="InputUsername" class="sr-only">Nombre de Usuario</label>
                     <div class="position-relative has-icon-right">
                         <InputText id="InputUsername" Class="form-control input-shadow" placeholder="Ingresa tu nombre de usuario" @bind-Value="userInfo.Email" />
-                        <ValidationMessage For="@(()=>userInfo.Email)" />                        
+                        <ValidationMessage For="@(()=>userInfo.Email)" />
                         <div class="form-control-position">
                             <i class="icon-user"></i>
                         </div>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="form-group">
                     <label for="InputPassword" class="sr-only">Contraseña</label>
-                    <div class="position-relative has-icon-right">                        
+                    <div class="position-relative has-icon-right">
                         <InputPassword id="InputPassword" Class="form-control input-shadow" @bind-Value="@userInfo.Password" />
                         <ValidationMessage For="@(()=>userInfo.Password)" />
                         <div class="form-control-position">
@@ -57,10 +57,11 @@
                     </div>
                 </div>
 
-                <ValidationSummary/>
+                @*<ValidationSummary/>*@
             </EditForm>
         </div>
     </div>
+    <label class="text-center text-danger">@ErrorMessage</label>
     <div class="card-footer text-center py-3">
         <p class="text-warning mb-0">Marco Legal y Regulatorio</p>
     </div>
@@ -69,15 +70,25 @@
 
 @code {
     private UserInfo userInfo = new UserInfo();
+    private string ErrorMessage;
 
     private async Task LoginUser()
     {
         var result = await httpClient.PostAsJsonAsync("api/Accounts/Login", userInfo);
-        var content = result.Content.ReadFromJsonAsync<UserToken>();
-        Console.WriteLine(content.Result.Token);
+
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var content = result.Content.ReadFromJsonAsync<UserToken>();
+            //Console.WriteLine(content.Result.Token);
 
 
-        await loginService.Login(content.Result.Token);
-        uriHelper.NavigateTo("");
+            await loginService.Login(content.Result.Token);
+            uriHelper.NavigateTo("", true);
+        }
+        else
+        {
+            this.ErrorMessage = await result.Content.ReadAsStringAsync();
+            Console.WriteLine(ErrorMessage);
+        }
     }
 }

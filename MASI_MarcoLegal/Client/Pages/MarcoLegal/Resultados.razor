@@ -116,7 +116,7 @@
                                 @foreach (var item in DetalleArticulos)
                                 {
                             <tr>
-                                <td>@item.Descripcion 5</td>
+                                <td>@item.Descripcion</td>
                                 <td>
                                     @if (@item.Cumple)
                                     {
@@ -139,7 +139,7 @@
                                 @foreach (var item in DetalleIncisos)
                                 {
                                     <tr>
-                                        <td>@item.Descripcion 5</td>
+                                        <td>@item.Descripcion</td>
                                         <td>
                                     @if (@item.Cumple)
                                     {
@@ -162,7 +162,7 @@
                                 @foreach (var item in DetalleSubIncisos)
                                 {
                         <tr>
-                            <td>@item.Descripcion 5</td>
+                            <td>@item.Descripcion</td>
                             <td>
                                 @if (@item.Cumple)
                                 {
@@ -209,9 +209,12 @@
     private async Task HandleSubmit()
     {
 
-        if (VerificacionId > 0)
+        if(VerificacionId > 0)
         {
             Console.WriteLine("api/Resultados/GetResultado/" + VerificacionId);
+            this.DetalleIncisos = null;
+            this.DetalleArticulos = null;
+            this.DetalleSubIncisos = null;
             this.Message = string.Empty;
             this.Resultado = await httpClient.GetFromJsonAsync<ResultadosViewModel>("api/Resultados/GetResultado/" + VerificacionId);
 
@@ -273,5 +276,5 @@
         {
             this.Message = "Debe seleccionar una Verificación";
         }
-    }   
+    }
 }

@@ -20,7 +20,7 @@ namespace MASI_MarcoLegal.Server.Controllers
         public MarcoLegalController(IMarcolegalService marcoLegalService) => this._marcoLegalService = marcoLegalService;
 
         [HttpGet("GetLeyesOrganizaciones")]
-        public async Task<IEnumerable<LeyOrganizacion>> GetLeyesOrganizacionesAsync()
+        public async Task<IEnumerable<Verificacion>> GetLeyesOrganizacionesAsync()
         {
             return await this._marcoLegalService.GetLeyesOrganizacionesAsync();
         }        
@@ -29,6 +29,18 @@ namespace MASI_MarcoLegal.Server.Controllers
         public async Task<IEnumerable<Organizacion>> GetOrganizacionesAsync()
         {
             return await this._marcoLegalService.GetOrganizacionesAsync();
+        }
+
+        [HttpPost("CreateOrganizacion")]
+        public async Task<IActionResult> CreateOrganizacion([FromBody] OrganizacionViewModel model)
+        {
+            if (model != null)
+            {
+                await this._marcoLegalService.CreateOrganizacionAsync(model);
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         [HttpGet("GetLeyes")]
@@ -91,6 +103,12 @@ namespace MASI_MarcoLegal.Server.Controllers
             return await this._marcoLegalService.GetArticulosAsync();
         }
 
+        [HttpGet("GetArticulosNoVerificables")]
+        public async Task<IEnumerable<Articulos>> GetArticulosNoVerificablesAsync()
+        {
+            return await this._marcoLegalService.GetArticulosNoVerificablesAsync();
+        }
+
         [HttpPost("CreateArticulo")]
         public async Task<IActionResult> CreateArticulo([FromBody] ArticuloViewModel model)
         {
@@ -107,6 +125,12 @@ namespace MASI_MarcoLegal.Server.Controllers
         public async Task<IEnumerable<Incisos>> GetIncisosAsync()
         {
             return await this._marcoLegalService.GetIncisosAsync();
+        }
+
+        [HttpGet("GetIncisosNoVerificables")]
+        public async Task<IEnumerable<Incisos>> GetIncisosNoVerificablesAsync()
+        {
+            return await this._marcoLegalService.GetIncisosNoVerificablesAsync();
         }
 
         [HttpPost("CreateInciso")]

@@ -33,7 +33,7 @@
 
                             @foreach (var item in CapitulosAPI)
                             {
-                                <option value="@item.CapituloID">@item.Descripcion</option>
+                                <option value="@item.CapituloID">@item.Descripcion @item.Detalle - Título: @item.Titulo.Descripcion - Ley: @item.Titulo.Ley.Descripcion</option>
                             }
 
                         }

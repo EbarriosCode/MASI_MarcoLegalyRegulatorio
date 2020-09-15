@@ -1,0 +1,30 @@
+﻿@inject HttpClient httpClient
+
+<div class="cardcard-authentication1 mx-auto my-5">
+    <div class="card-body">
+        <div class="card-content p-2">
+            <div class="card-title text-uppercase text-center py-3">@Title</div>
+            <hr />
+            <EditForm Model="@Organizacion" OnValidSubmit="@OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label class="sr-only">Descripción :</label>
+                    <div class="position-relative has-icon-right">
+                        <InputText @bind-Value="@Organizacion.Nombre" Class="form-control input-shadow" placeholder="Nombre" />
+                        <ValidationMessage For="@(() => Organizacion.Nombre)" />
+                    </div>
+                </div>
+              
+                <button type="submit" class="btn btn-light btn-block"> @ButtonText</button>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public OrganizacionViewModel Organizacion { get; set; }
+    [Parameter] public string Title { get; set; } = "Crear Organización";
+    [Parameter] public string ButtonText { get; set; } = "Crear";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }  
+}

@@ -35,9 +35,8 @@ INNER JOIN
 INNER JOIN
 	Incisos i ON a.ArticuloID = i.ArticuloID
 	WHERE 1 = 1
-	AND l.LeyID = 1 
-	AND a.Verificable = 1 
-	and i.Verificable = 1
+	AND l.LeyID = 1 	
+	AND i.Verificable = 1
 
 
 
@@ -58,3 +57,24 @@ update Incisos set Verificable = 1 where ArticuloID = 9
 
 
 SELECT * FROM Titulos
+
+select * from Verificacion
+select * from CumplimientoArticulo
+
+
+SELECT * FROM Capitulos
+UPDATE Capitulos SET Descripcion = 'CAPITULO I' WHERE CapituloID = 15
+
+
+SELECT * FROM Leyes
+
+select * from Organizaciones
+
+Insert Into Organizaciones (Nombre) values ('Banco GyT Continental')
+Insert Into Organizaciones (Nombre) values ('Banco Rural de Guatemala')
+Insert Into Organizaciones (Nombre) values ('Banco Agrícola Mercantil BAM')
+Insert Into Organizaciones (Nombre) values ('Banco Industria BI')
+
+
+
+Insert Into Organizaciones (Nombre) values ('Bancafé')
